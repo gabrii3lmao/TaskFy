@@ -3,6 +3,7 @@ import { TeamsController } from "./teams.controller.js";
 import { requireAuth } from "../../middlewares/authMiddleware.js";
 import { validate } from "../../middlewares/validationMiddleware.js";
 import { z } from "zod";
+import { addMemberSchema } from "./teams.schema.js";
 
 const createTeamSchema = z.object({
   body: z.object({
@@ -17,6 +18,13 @@ teamsRouter.post(
   requireAuth,
   validate(createTeamSchema),
   TeamsController.create,
+);
+
+teamsRouter.post(
+  "/:teamId/members",
+  requireAuth,
+  validate(addMemberSchema),
+  TeamsController.addMember,
 );
 
 export { teamsRouter };

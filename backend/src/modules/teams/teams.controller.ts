@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { TeamsService } from "./teams.service.js";
 import { HttpException } from "../../core/errorHandler.js";
+import { string } from "zod";
 
 export class TeamsController {
   static async create(req: Request, res: Response, next: NextFunction) {
@@ -14,6 +15,23 @@ export class TeamsController {
 
       const team = await TeamsService.createTeam(name, userId);
       res.status(201).json({ status: "success", data: team });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async addMember(req: Request, res: Response, next: NextFunction) {
+    try {
+      const teamId = req.params.teamId as string;
+      const { userId, role } = req.body;
+
+      const member = await TeamsService.addMemberToTeam({
+        teamId,
+        userId,
+        role,
+      });
+
+      res.status(201).json({ status: "success", data: member });
     } catch (error) {
       next(error);
     }

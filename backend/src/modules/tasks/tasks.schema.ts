@@ -6,15 +6,23 @@ import {
   uuid,
   varchar,
   type AnyPgColumn,
+  check,
   primaryKey,
 } from "drizzle-orm/pg-core";
 import { projects } from "../projects/projects.schema.js";
 import { users } from "../users/users.schema.js";
+import { sql } from "drizzle-orm";
 
 export const tasksStatusEnum = pgEnum("task_status", [
   "not_started",
   "in_progress",
   "completed",
+]);
+
+export const deadlineStatusEnum = pgEnum("deadline_status", [
+  "on_time",
+  "delayed",
+  "ahead",
 ]);
 
 export const tasks = pgTable("tasks", {
@@ -29,6 +37,9 @@ export const tasks = pgTable("tasks", {
   description: text("description"),
   deadline: timestamp("deadline").notNull(),
   status: tasksStatusEnum("status").default("not_started").notNull(),
+  deadlineStatus: deadlineStatusEnum("deadline_status")
+    .default("on_time")
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -45,4 +56,27 @@ export const taskAssignees = pgTable(
   (table) => ({
     pk: primaryKey({ columns: [table.taskId, table.userId] }),
   }),
+);
+
+export const timeLogs = pgTable(
+  "time_logs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    taskId: uuid("task_id")
+      .notNull()
+      .references(() => tasks.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    startTime: timestamp("start_time").defaultNow().notNull(),
+    endTime: timestamp("end_time"),
+  },
+  (table) => {
+    return {
+      endTimeAfterStartTime: check(
+        "end_time_after_start_time",
+        sql`${table.endTime} > ${table.startTime}`,
+      ),
+    };
+  },
 );

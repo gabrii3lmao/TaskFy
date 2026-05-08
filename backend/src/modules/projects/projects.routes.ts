@@ -13,4 +13,6 @@ projectRouter.post(
   ProjectController.create,
 );
 
+projectRouter.delete("/:projectId", requireAuth, ProjectController.delete);
+
 export { projectRouter };

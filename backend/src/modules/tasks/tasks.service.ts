@@ -1,8 +1,9 @@
 import { db } from "../../core/db.js";
-import { tasks, taskAssignees } from "./tasks.schema.js";
-import { and, eq } from "drizzle-orm";
+import { tasks, taskAssignees, timeLogs } from "./tasks.schema.js";
+import { and, eq, isNull } from "drizzle-orm";
 import { HttpException } from "../../core/errorHandler.js";
 import type { Task } from "../../types/task.js";
+import { time } from "node:console";
 
 export class TasksService {
   static async createTask(data: Task) {
@@ -48,5 +49,78 @@ export class TasksService {
       .returning();
 
     return updatedTask;
+  }
+
+  static async startTaskTimer(taskId: string, userId: string) {
+    const [isAssignee] = await db
+      .select()
+      .from(taskAssignees)
+      .where(
+        and(eq(taskAssignees.taskId, taskId), eq(taskAssignees.userId, userId)),
+      );
+
+    if (!isAssignee)
+      throw new HttpException(
+        "Apenas encarregados podem iniciar a tarefa.",
+        403,
+      );
+
+    const [activeTimer] = await db
+      .select()
+      .from(timeLogs)
+      .where(
+        and(
+          eq(timeLogs.taskId, taskId),
+          eq(timeLogs.userId, userId),
+          isNull(timeLogs.endTime),
+        ),
+      );
+
+    if (activeTimer) {
+      throw new HttpException(
+        "Está tarefa já possuí um cronômetro ativo.",
+        400,
+      );
+    }
+
+    await db.transaction(async (tx) => {
+      await tx
+        .update(tasks)
+        .set({ status: "in_progress" })
+        .where(eq(tasks.id, taskId));
+      await tx.insert(timeLogs).values({
+        taskId,
+        userId,
+      });
+    });
+
+    return { message: "Cronômetro iniciado com sucesso." };
+  }
+
+  static async stopTaskTimer(taskId: string, userId: string) {
+    const [activeTimer] = await db
+      .select()
+      .from(timeLogs)
+      .where(
+        and(
+          eq(timeLogs.taskId, taskId),
+          eq(timeLogs.userId, userId),
+          isNull(timeLogs.endTime),
+        ),
+      );
+
+    if (!activeTimer) {
+      throw new HttpException(
+        "Não há um cronômetro ativo para esta tarefa.",
+        400,
+      );
+    }
+
+    await db
+      .update(timeLogs)
+      .set({ endTime: new Date() })
+      .where(eq(timeLogs.id, activeTimer.id));
+
+    return { message: "Cronômetro pausado com sucesso." };
   }
 }
