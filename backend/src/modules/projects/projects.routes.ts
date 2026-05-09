@@ -6,6 +6,7 @@ import { createProjectSchema } from "./projects.schema.js";
 
 const projectsRouter = Router();
 
+projectsRouter.get("/", requireAuth, ProjectController.getUserProjects);
 projectsRouter.post(
   "/",
   requireAuth,

@@ -5,6 +5,14 @@ import { HttpException } from "../../core/errorHandler.js";
 import type { Task } from "../../types/task.js";
 
 export class TasksService {
+  static async getTasksByProject(projectId: string) {
+    const projectTasks = await db
+      .select()
+      .from(tasks)
+      .where(eq(tasks.projectId, projectId));
+      
+    return projectTasks;
+  }
   static async createTask(data: Task) {
     return db.transaction(async (tx) => {
       const [newTask] = await tx.insert(tasks).values(data).returning();

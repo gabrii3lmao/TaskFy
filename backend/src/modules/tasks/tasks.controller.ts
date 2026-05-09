@@ -74,8 +74,27 @@ export class TasksController {
       if (!userId) {
         throw new HttpException("Usuário não autenticado", 401);
       }
-      const dashboardData = await TasksDashboardService.getUserDashboard(userId);
+      const dashboardData =
+        await TasksDashboardService.getUserDashboard(userId);
       res.status(200).json({ status: "success", data: dashboardData });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getTasksByProject(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { projectId } = req.query;
+
+      if (!projectId) {
+        throw new HttpException("Projeto não encontrado", 404);
+      }
+      const tasks = await TasksService.getTasksByProject(projectId as string);
+      res.status(200).json({ status: "success", data: tasks });
     } catch (error) {
       next(error);
     }

@@ -1,16 +1,66 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from "@/views/HomeView.vue"
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
+const routes: RouteRecordRaw[] = [
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/modules/auth/AuthVue.vue'),
+    meta: { requiresGuest: true },
+  },
+  {
+    path: '/',
+    component: () => import('@/layout/MainLayout.vue'),
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: '',
+        name: 'Dashboard',
+        component: () => import('@/modules/dashboard/DashboardView.vue'),
+      },
+      {
+        path: 'projects',
+        name: 'Projects',
+        component: () => import('@/modules/projects/ProjectsView.vue'),
+      },
+      {
+        path: 'teams',
+        name: 'Teams',
+        component: () => import('@/modules/teams/TeamsView.vue'),
+      },
+      {
+        path: 'notifications',
+        name: 'Notifications',
+        component: () => import('@/modules/notifications/NotificationsView.vue'),
+      },
+      // Rota Dinâmica das Tarefas do Projeto ligada corretamente
+      {
+        path: 'projects/:id',
+        name: 'ProjectDetails',
+        component: () => import('@/modules/projects/ProjectDetailsView.vue'),
+      },
+    ],
+  },
+]
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView,
-    },
-  ],
+  history: createWebHistory(),
+  routes,
+})
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+  const token = localStorage.getItem('@TaskFy:token')
+
+  if (to.meta.requiresAuth && !token) {
+    return next({ name: 'Login' })
+  }
+
+  if (to.meta.requiresGuest && token) {
+    return next({ name: 'Dashboard' })
+  }
+
+  next()
 })
 
 export default router

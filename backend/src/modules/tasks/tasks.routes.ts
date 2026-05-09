@@ -9,6 +9,7 @@ const tasksRouter = Router();
 tasksRouter.use(requireAuth);
 
 tasksRouter.get("/dashboard", TasksController.getDashboard);
+tasksRouter.get("/", TasksController.getTasksByProject);
 tasksRouter.post("/", validate(createTaskSchema), TasksController.create);
 
 tasksRouter.patch("/:taskId/complete", TasksController.complete);

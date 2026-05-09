@@ -16,7 +16,7 @@ export class TeamsService {
       })
       .from(teams)
       .innerJoin(teamMembers, eq(teams.id, teamMembers.teamId))
-      .where(eq(teamMembers.id, userId)); 
+      .where(eq(teamMembers.userId, userId)); 
 
     return userTeams;
   }
