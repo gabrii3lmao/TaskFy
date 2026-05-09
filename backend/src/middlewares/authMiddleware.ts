@@ -17,7 +17,7 @@ export const requireAuth = (
 ) => {
   const authHeader = req.headers.authorization;
 
-  if (authHeader || !authHeader?.startsWith("Bearer")) {
+  if (!authHeader || !authHeader?.startsWith("Bearer")) {
     return next(new HttpException("Token não fornecido", 401));
   }
 

@@ -1,7 +1,8 @@
 import { drizzle } from "drizzle-orm/postgres-js";
-import { users } from "../modules/users/users.schema.js";
-import { teams } from "../modules/teams/teams.schema.js";
-import { teamMembers } from "../modules/teams/teams.schema.js";
+export * from "../modules/users/users.schema.js";
+export * from "../modules/teams/teams.schema.js";
+export * from "../modules/projects/projects.schema.js";
+export * from "../modules/tasks/tasks.schema.js";
 import "dotenv/config";
 
 

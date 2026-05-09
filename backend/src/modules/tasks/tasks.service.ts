@@ -3,7 +3,6 @@ import { tasks, taskAssignees, timeLogs } from "./tasks.schema.js";
 import { and, eq, isNull } from "drizzle-orm";
 import { HttpException } from "../../core/errorHandler.js";
 import type { Task } from "../../types/task.js";
-import { time } from "node:console";
 
 export class TasksService {
   static async createTask(data: Task) {
@@ -78,7 +77,7 @@ export class TasksService {
 
     if (activeTimer) {
       throw new HttpException(
-        "Está tarefa já possuí um cronômetro ativo.",
+        "Esta tarefa já possui um cronômetro ativo.",
         400,
       );
     }

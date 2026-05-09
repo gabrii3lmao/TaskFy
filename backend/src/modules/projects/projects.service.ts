@@ -1,7 +1,8 @@
 import { db } from "../../core/db.js";
 import { projects } from "./projects.schema.js";
 import { teamMembers } from "../teams/teams.schema.js";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
+import { tasks } from "../tasks/tasks.schema.js";
 import { HttpException, NotFoundException } from "../../core/errorHandler.js";
 import type { Project } from "../../types/project.js";
 
@@ -49,5 +50,50 @@ export class ProjectsService {
     await db.delete(projects).where(eq(projects.id, projectId));
 
     return { message: "Projeto excluído com sucesso." };
+  }
+
+  static async getUsersProjects(userId: string) {
+    const userProjects = await db
+      .select({
+        id: projects.id,
+        title: projects.title,
+        deadline: projects.deadline,
+        description: projects.description,
+        supervisorId: projects.supervisorId,
+        totalTasks: sql<number>`COUNT(${tasks.id})`.mapWith(Number),
+        completedTasks:
+          sql<number>`COUNT(${tasks.id}) FILTER (WHERE ${tasks.status} = 'completed')`.mapWith(
+            Number,
+          ),
+      })
+      .from(projects)
+      .innerJoin(
+        teamMembers,
+        and(
+          eq(projects.teamId, teamMembers.teamId),
+          eq(teamMembers.userId, userId),
+        ),
+      )
+      .leftJoin(tasks, eq(projects.id, tasks.projectId))
+      .groupBy(projects.id);
+
+    return userProjects.map((project) => {
+      const progress =
+        project.totalTasks === 0
+          ? 0
+          : Math.round((project.completedTasks / project.totalTasks) * 100);
+
+      const now = new Date();
+      let deadlineStatus = "Em dia";
+      if (project.deadline < now && progress < 100) {
+        deadlineStatus = "Atrasado";
+      }
+
+      return {
+        ...project,
+        progress,
+        deadlineStatus,
+      };
+    });
   }
 }

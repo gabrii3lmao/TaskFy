@@ -7,7 +7,7 @@ export const projects = pgTable("projects", {
   id: uuid("id").primaryKey().defaultRandom(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description").notNull(),
-  deadline: timestamp("deadline").notNull(),
+  deadline: timestamp("deadline", { withTimezone: true }).notNull(),
   teamId: uuid("team_id")
     .notNull()
     .references(() => teams.id, { onDelete: "cascade" }),

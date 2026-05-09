@@ -144,7 +144,7 @@ describe("AuthService", () => {
 
       expect(jwt.sign).toHaveBeenCalledWith(
         expect.objectContaining({
-          id: mockUser.id,
+          userId: mockUser.id,
           email: mockUser.email,
         }),
         expect.any(String),

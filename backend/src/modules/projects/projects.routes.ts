@@ -4,15 +4,15 @@ import { requireAuth } from "../../middlewares/authMiddleware.js";
 import { validate } from "../../middlewares/validationMiddleware.js";
 import { createProjectSchema } from "./projects.schema.js";
 
-const projectRouter = Router();
+const projectsRouter = Router();
 
-projectRouter.post(
+projectsRouter.post(
   "/",
   requireAuth,
   validate(createProjectSchema),
   ProjectController.create,
 );
 
-projectRouter.delete("/:projectId", requireAuth, ProjectController.delete);
+projectsRouter.delete("/:projectId", requireAuth, ProjectController.delete);
 
-export { projectRouter };
+export { projectsRouter };

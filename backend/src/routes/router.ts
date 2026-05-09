@@ -1,11 +1,17 @@
 import { Router } from "express";
 import { teamsRouter } from "../modules/teams/teams.routes.js";
-import authRouter from "../modules/auth/auth.routes.js";
+import { tasksRouter } from "../modules/tasks/tasks.routes.js";
+import { projectsRouter } from "../modules/projects/projects.routes.js";
+import { usersRouter } from "../modules/users/users.routes.js";
 
+import authRouter from "../modules/auth/auth.routes.js";
 
 const router = Router();
 
 router.use("/auth", authRouter);
 router.use("/teams", teamsRouter);
+router.use("/projects", projectsRouter);
+router.use("/tasks", tasksRouter);
+router.use("/users", usersRouter);
 
 export default router;

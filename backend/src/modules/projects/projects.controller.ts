@@ -33,4 +33,23 @@ export class ProjectController {
       next(error);
     }
   }
+
+  static async getUserProjects(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const userId = req.user?.id;
+
+      if (!userId) {
+        throw new HttpException("Usuário não autenticado", 401);
+      }
+
+      const projectList = await ProjectsService.getUsersProjects(userId);
+      res.status(200).json({ status: "success", data: projectList });
+    } catch (error) {
+      next(error);
+    }
+  }
 }

@@ -35,7 +35,7 @@ export const tasks = pgTable("tasks", {
   }),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
-  deadline: timestamp("deadline").notNull(),
+  deadline: timestamp("deadline", { withTimezone: true }).notNull(),
   status: tasksStatusEnum("status").default("not_started").notNull(),
   deadlineStatus: deadlineStatusEnum("deadline_status")
     .default("on_time")
@@ -80,3 +80,22 @@ export const timeLogs = pgTable(
     };
   },
 );
+
+// validacoes
+
+import { z } from "zod";
+
+export const createTaskSchema = z.object({
+  body: z.object({
+    title: z.string().min(3, "O título deve ter no mínimo 3 caracteres"),
+    description: z.string().optional(),
+    deadline: z.coerce.date({
+      error: () => ({ message: "Data limite inválida" }),
+    }),
+    projectId: z.string().uuid("ID do projeto inválido"),
+    parentTaskId: z.string().uuid("ID da tarefa pai inválido").optional(),
+    assigneeIds: z
+      .array(z.string().uuid("ID de encarregado inválido"))
+      .default([]),
+  }),
+});

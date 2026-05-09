@@ -36,4 +36,19 @@ export class TeamsController {
       next(error);
     }
   }
+
+  static async getUsersTeams(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+
+      if (!userId) {
+        throw new HttpException("Usuário não autenticado", 401);
+      }
+
+      const userTeams = await TeamsService.getUserTeams(userId);
+      res.status(200).json({ status: "success", data: userTeams });
+    } catch (error) {
+      next(error);
+    }
+  }
 }

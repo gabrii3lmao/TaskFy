@@ -5,6 +5,22 @@ import { teams, teamMembers } from "./teams.schema.js";
 import { HttpException } from "../../core/errorHandler.js";
 
 export class TeamsService {
+  static async getUserTeams(userId: string) {
+    const userTeams = await db
+      .select({
+        id: teams.id,
+        name: teams.name,
+        role: teamMembers.role,
+        joinedAt: teamMembers.joinedAt,
+        createdAt: teams.createdAt,
+      })
+      .from(teams)
+      .innerJoin(teamMembers, eq(teams.id, teamMembers.teamId))
+      .where(eq(teamMembers.id, userId)); 
+
+    return userTeams;
+  }
+
   static async createTeam(name: string, creatorUserId: string) {
     const newTeam = await db.transaction(async (tx) => {
       const [insertedTeam] = await tx

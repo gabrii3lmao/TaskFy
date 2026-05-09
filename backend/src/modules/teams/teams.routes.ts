@@ -13,6 +13,7 @@ const createTeamSchema = z.object({
 
 const teamsRouter = Router();
 
+teamsRouter.get("/", requireAuth, TeamsController.getUsersTeams);
 teamsRouter.post(
   "/",
   requireAuth,
