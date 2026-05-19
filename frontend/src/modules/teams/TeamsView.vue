@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { teamService, type Team } from '@/services/teamService'

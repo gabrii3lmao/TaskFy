@@ -4,7 +4,7 @@ export interface Task {
   id: string
   title: string
   description: string
-  status: 'pendente' | 'em_andamento' | 'concluida'
+  status: 'completed' | 'in_progress' | 'not_started'
   deadline: string
   projectId: string
   isTimerRunning: boolean

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { taskService, type Task } from '@/services/taskService'
@@ -10,8 +11,8 @@ export const useTaskStore = defineStore(
     const errorMessage = ref('')
 
     // Getters para separar visualmente se quiser usar no template
-    const pendingTasks = computed(() => tasks.value.filter((t) => t.status !== 'concluida'))
-    const completedTasks = computed(() => tasks.value.filter((t) => t.status === 'concluida'))
+    const pendingTasks = computed(() => tasks.value.filter((t) => t.status !== 'completed'))
+    const completedTasks = computed(() => tasks.value.filter((t) => t.status === 'completed'))
 
     // 1. Carregar tarefas do projeto
     const loadTasks = async (projectId: string) => {
@@ -79,7 +80,7 @@ export const useTaskStore = defineStore(
 
       try {
         await taskService.completeTask(taskId)
-        task.status = 'concluida'
+        task.status = 'completed'
         task.isTimerRunning = false // Para o timer se estiver rodando
       } catch (error: any) {
         console.error('Erro ao concluir tarefa:', error)

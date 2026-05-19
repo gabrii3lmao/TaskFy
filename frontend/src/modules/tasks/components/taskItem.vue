@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useTaskStore } from '@/stores/task'
@@ -36,17 +37,17 @@ const handleComplete = async () => {
 <template>
   <div
     class="bg-surface border border-border rounded-xl p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all duration-300"
-    :class="{ 'opacity-60 bg-slate-50': task.status === 'concluida' }"
+    :class="{ 'opacity-60 bg-slate-50': task.status === 'completed' }"
   >
     <div class="flex-1">
       <div class="flex items-center gap-2 mb-1">
         <i
           class="pi pi-check-circle text-xs"
-          :class="task.status === 'concluida' ? 'text-success' : 'text-muted'"
+          :class="task.status === 'completed' ? 'text-success' : 'text-muted'"
         ></i>
         <h4
           class="font-semibold text-slate-800 text-sm"
-          :class="{ 'line-through text-muted': task.status === 'concluida' }"
+          :class="{ 'line-through text-muted': task.status === 'completed' }"
         >
           {{ task.title }}
         </h4>
@@ -54,7 +55,7 @@ const handleComplete = async () => {
       <p class="text-xs text-muted line-clamp-2">{{ task.description || 'Sem descrição' }}</p>
     </div>
 
-    <div class="flex items-center gap-2 shrink-0" v-if="task.status !== 'concluida'">
+    <div class="flex items-center gap-2 shrink-0" v-if="task.status !== 'completed'">
       <button
         @click="handleToggleTimer"
         :disabled="actionLoading"
