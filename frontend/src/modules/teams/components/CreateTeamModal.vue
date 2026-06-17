@@ -35,13 +35,13 @@ const handleSubmit = async () => {
 
 <template>
   <div
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-overlay backdrop-blur-sm animate-fade-in"
   >
     <div
       class="bg-surface border border-border rounded-xl shadow-xl w-full max-w-md overflow-hidden flex flex-col"
     >
       <div class="p-6 border-b border-border flex items-center justify-between bg-background/50">
-        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+        <h2 class="text-lg font-bold text-foreground flex items-center gap-2">
           <i class="pi pi-users text-primary"></i>
           Nova Equipe
         </h2>
@@ -63,7 +63,7 @@ const handleSubmit = async () => {
         </div>
 
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1"
+          <label class="block text-xs font-semibold uppercase tracking-wider text-muted mb-1"
             >Nome da Equipe *</label
           >
           <input
@@ -97,18 +97,3 @@ const handleSubmit = async () => {
   </div>
 </template>
 
-<style scoped>
-.animate-fade-in {
-  animation: fadeIn 0.2s ease-out;
-}
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-</style>

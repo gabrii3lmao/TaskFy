@@ -31,7 +31,7 @@ onMounted(() => {
 
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+          <h2 class="text-2xl font-bold text-foreground flex items-center gap-2">
             <i class="pi pi-list text-primary"></i>
             Tarefas do Projeto
           </h2>
@@ -69,7 +69,7 @@ onMounted(() => {
       class="bg-surface border border-dashed border-border rounded-2xl p-12 text-center space-y-3"
     >
       <i class="pi pi-inbox text-4xl text-muted/50"></i>
-      <h3 class="text-lg font-semibold text-slate-800">Nenhuma tarefa por aqui</h3>
+      <h3 class="text-lg font-semibold text-foreground">Nenhuma tarefa por aqui</h3>
       <p class="text-sm text-muted">Comece criando a primeira tarefa para este projeto.</p>
       <button
         @click="showCreateModal = true"

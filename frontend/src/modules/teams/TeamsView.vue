@@ -45,7 +45,7 @@ const getRoleBadgeClass = (role: string) => {
     case 'supervisor':
       return 'bg-primary/10 text-primary border-primary/20'
     default:
-      return 'bg-slate-100 text-slate-600 border-border'
+      return 'bg-background text-muted border-border'
   }
 }
 
@@ -65,7 +65,7 @@ onMounted(() => {
   <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+        <h1 class="text-2xl font-bold text-foreground flex items-center gap-2">
           <i class="pi pi-users text-primary"></i>
           Minhas Equipes
         </h1>
@@ -97,9 +97,9 @@ onMounted(() => {
         :key="i"
         class="bg-surface border border-border rounded-xl p-6 space-y-4 animate-pulse"
       >
-        <div class="h-6 bg-slate-200 rounded w-1/2"></div>
-        <div class="h-4 bg-slate-100 rounded w-1/3"></div>
-        <div class="h-10 bg-slate-50 rounded-lg mt-4"></div>
+        <div class="h-6 bg-background rounded w-1/2"></div>
+        <div class="h-4 bg-background rounded w-1/3"></div>
+        <div class="h-10 bg-background rounded-lg mt-4"></div>
       </div>
     </div>
 
@@ -108,7 +108,7 @@ onMounted(() => {
       class="bg-surface border border-border rounded-xl p-12 text-center max-w-lg mx-auto space-y-3 shadow-sm"
     >
       <i class="pi pi-users text-4xl text-muted"></i>
-      <h3 class="text-lg font-semibold text-slate-800">Nenhuma equipe encontrada</h3>
+      <h3 class="text-lg font-semibold text-foreground">Nenhuma equipe encontrada</h3>
       <p class="text-sm text-muted">
         Você ainda não faz parte de nenhuma equipe. Crie uma nova para começar a gerenciar projetos
         em grupo.
@@ -123,7 +123,7 @@ onMounted(() => {
       >
         <div>
           <div class="flex items-start justify-between gap-2">
-            <h3 class="text-lg font-semibold text-slate-800 truncate" :title="team.name">
+            <h3 class="text-lg font-semibold text-foreground truncate" :title="team.name">
               {{ team.name }}
             </h3>
 

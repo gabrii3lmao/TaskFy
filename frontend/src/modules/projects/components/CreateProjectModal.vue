@@ -4,7 +4,7 @@ import { ref, onMounted } from 'vue'
 import { api } from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 
-const props = defineEmits(['close', 'created'])
+const emit = defineEmits(['close', 'created'])
 const authStore = useAuthStore()
 
 const title = ref('')
@@ -84,8 +84,8 @@ const handleSubmit = async () => {
     })
 
     // Avisa a View pai que o projeto foi criado e passa os dados novos
-    props('created', response.data.data)
-    props('close')
+    emit('created', response.data.data)
+    emit('close')
   } catch (error: any) {
     // Aqui a mágica da nossa trava do backend acontece (Erro 400 se não for da equipe)
     errorMessage.value =
@@ -103,19 +103,19 @@ onMounted(() => {
 
 <template>
   <div
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-overlay backdrop-blur-sm animate-fade-in"
   >
     <div
       class="bg-surface border border-border rounded-xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col"
     >
       <div class="p-6 border-b border-border flex items-center justify-between bg-background/50">
-        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+        <h2 class="text-lg font-bold text-foreground flex items-center gap-2">
           <i class="pi pi-folder-plus text-primary"></i>
           Criar Novo Projeto
         </h2>
         <button
           @click="$emit('close')"
-          class="p-1 text-muted hover:text-slate-800 transition-colors"
+          class="p-1 text-muted hover:text-foreground transition-colors"
         >
           <i class="pi pi-times text-lg"></i>
         </button>
@@ -131,7 +131,7 @@ onMounted(() => {
         </div>
 
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1"
+          <label class="block text-xs font-semibold uppercase tracking-wider text-muted mb-1"
             >Título do Projeto *</label
           >
           <input
@@ -144,7 +144,7 @@ onMounted(() => {
         </div>
 
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1"
+          <label class="block text-xs font-semibold uppercase tracking-wider text-muted mb-1"
             >Descrição</label
           >
           <textarea
@@ -157,25 +157,25 @@ onMounted(() => {
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1"
+            <label class="block text-xs font-semibold uppercase tracking-wider text-muted mb-1"
               >Prazo Final *</label
             >
             <input
               v-model="deadline"
               type="date"
               required
-              class="w-full px-3 py-2 border border-border rounded-lg bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-700"
+              class="w-full px-3 py-2 border border-border rounded-lg bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground"
             />
           </div>
 
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1"
+            <label class="block text-xs font-semibold uppercase tracking-wider text-muted mb-1"
               >Equipe Responsável *</label
             >
             <select
               v-model="teamId"
               :disabled="loadingTeams"
-              class="w-full px-3 py-2 border border-border rounded-lg bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-700"
+              class="w-full px-3 py-2 border border-border rounded-lg bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground"
             >
               <option v-if="loadingTeams" value="">Carregando...</option>
               <option v-for="team in teams" :key="team.id" :value="team.id">
@@ -186,7 +186,7 @@ onMounted(() => {
         </div>
 
         <div class="border-t border-border pt-4 mt-2">
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
+          <label class="block text-xs font-semibold uppercase tracking-wider text-muted mb-1">
             Supervisor do Projeto *
           </label>
 
@@ -194,7 +194,7 @@ onMounted(() => {
             v-if="selectedSupervisor"
             class="flex items-center justify-between p-2.5 bg-primary/5 border border-primary/20 rounded-lg mb-3"
           >
-            <div class="flex items-center gap-2 text-sm text-slate-700 font-medium truncate">
+            <div class="flex items-center gap-2 text-sm text-foreground font-medium truncate">
               <i class="pi pi-user-edit text-primary text-xs shrink-0"></i>
               <span class="truncate">{{ selectedSupervisor.name }}</span>
             </div>
@@ -232,9 +232,9 @@ onMounted(() => {
                 :key="user.id"
                 type="button"
                 @click="selectSupervisor(user)"
-                class="w-full text-left px-3 py-2 text-sm hover:bg-slate-50 border-b border-border/50 last:border-0 truncate flex items-center justify-between"
+                class="w-full text-left px-3 py-2 text-sm hover:bg-background border-b border-border/50 last:border-0 truncate flex items-center justify-between"
               >
-                <span class="font-medium text-slate-700 truncate">{{ user.name }}</span>
+                <span class="font-medium text-foreground truncate">{{ user.name }}</span>
                 <span class="text-[10px] text-muted ml-2 shrink-0">{{ user.email }}</span>
               </button>
             </div>
@@ -261,7 +261,7 @@ onMounted(() => {
           <button
             type="button"
             @click="$emit('close')"
-            class="px-4 py-2 text-sm font-medium text-muted hover:text-slate-800 transition-colors"
+            class="px-4 py-2 text-sm font-medium text-muted hover:text-foreground transition-colors"
           >
             Cancelar
           </button>
@@ -279,19 +279,3 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped>
-.animate-fade-in {
-  animation: fadeIn 0.2s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-</style>

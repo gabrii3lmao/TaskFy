@@ -69,14 +69,14 @@ const handleSubmit = async () => {
 
 <template>
   <div
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-overlay backdrop-blur-sm animate-fade-in"
   >
     <div
       class="bg-surface border border-border rounded-xl shadow-xl w-full max-w-md overflow-hidden flex flex-col"
     >
       <div class="p-6 border-b border-border flex items-center justify-between bg-background/50">
         <div>
-          <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <h2 class="text-lg font-bold text-foreground flex items-center gap-2">
             <i class="pi pi-user-plus text-primary"></i>
             Adicionar Membro
           </h2>
@@ -86,7 +86,7 @@ const handleSubmit = async () => {
         </div>
         <button
           @click="$emit('close')"
-          class="p-1 text-muted hover:text-slate-800 transition-colors"
+          class="p-1 text-muted hover:text-foreground transition-colors"
         >
           <i class="pi pi-times text-lg"></i>
         </button>
@@ -110,7 +110,7 @@ const handleSubmit = async () => {
         </div>
 
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1"
+          <label class="block text-xs font-semibold uppercase tracking-wider text-muted mb-1"
             >1. Buscar Usuário *</label
           >
 
@@ -119,7 +119,7 @@ const handleSubmit = async () => {
             class="flex items-center justify-between p-2.5 bg-background border border-border rounded-lg"
           >
             <div class="truncate pr-2">
-              <p class="text-sm font-medium text-slate-800 truncate">{{ selectedUser.name }}</p>
+              <p class="text-sm font-medium text-foreground truncate">{{ selectedUser.name }}</p>
               <p class="text-[10px] text-muted truncate">{{ selectedUser.email }}</p>
             </div>
             <button
@@ -154,9 +154,9 @@ const handleSubmit = async () => {
                 :key="user.id"
                 type="button"
                 @click="selectUser(user)"
-                class="w-full text-left px-3 py-2 hover:bg-slate-50 border-b border-border/50 last:border-0 flex flex-col justify-center"
+                class="w-full text-left px-3 py-2 hover:bg-background border-b border-border/50 last:border-0 flex flex-col justify-center"
               >
-                <span class="text-sm font-medium text-slate-800 truncate">{{ user.name }}</span>
+                <span class="text-sm font-medium text-foreground truncate">{{ user.name }}</span>
                 <span class="text-[10px] text-muted truncate">{{ user.email }}</span>
               </button>
             </div>
@@ -164,7 +164,7 @@ const handleSubmit = async () => {
         </div>
 
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1"
+          <label class="block text-xs font-semibold uppercase tracking-wider text-muted mb-1"
             >2. Definir Função/Cargo *</label
           >
           <select
@@ -181,7 +181,7 @@ const handleSubmit = async () => {
           <button
             type="button"
             @click="$emit('close')"
-            class="px-4 py-2 text-sm font-medium text-muted hover:text-slate-800 transition-colors"
+            class="px-4 py-2 text-sm font-medium text-muted hover:text-foreground transition-colors"
           >
             Fechar
           </button>
@@ -199,18 +199,3 @@ const handleSubmit = async () => {
   </div>
 </template>
 
-<style scoped>
-.animate-fade-in {
-  animation: fadeIn 0.2s ease-out;
-}
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-</style>

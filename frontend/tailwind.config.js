@@ -1,23 +1,25 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx,vue}'],
   theme: {
     extend: {
       colors: {
-        primary: '#1db997',
-        secondary: '#19a7d2',
+        primary: '#2563eb',
+        secondary: '#0d9488',
 
-        background: '#f9fafb',
-        surface: '#ffffff',
+        background: 'var(--color-background)',
+        surface: 'var(--color-surface)',
 
-        foreground: '#111827',
-        muted: '#6b7280',
+        foreground: 'var(--color-foreground)',
+        muted: 'var(--color-muted)',
 
-        border: '#e2e8f0',
+        border: 'var(--color-border)',
+        overlay: 'var(--color-overlay)',
 
-        success: '#22c55e',
-        warning: '#f59e0b',
-        danger: '#ef4444',
+        success: '#16a34a',
+        warning: '#d97706',
+        danger: '#dc2626',
       },
 
       fontFamily: {
@@ -32,8 +34,8 @@ export default {
       },
 
       boxShadow: {
-        subtle: '0 1px 2px rgba(15, 23, 42, 0.04)',
-        card: '0 2px 6px rgba(15, 23, 42, 0.06)',
+        subtle: 'var(--shadow-subtle)',
+        card: 'var(--shadow-card)',
       },
 
       transitionDuration: {

@@ -48,19 +48,19 @@ const handleSubmit = async () => {
 
 <template>
   <div
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-overlay backdrop-blur-sm"
   >
     <div
       class="bg-surface border border-border rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col"
     >
       <div class="p-6 border-b border-border flex items-center justify-between">
-        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+        <h2 class="text-lg font-bold text-foreground flex items-center gap-2">
           <i class="pi pi-check-square text-primary"></i>
           Nova Tarefa
         </h2>
         <button
           @click="$emit('close')"
-          class="p-1 text-muted hover:text-slate-800 transition-colors"
+          class="p-1 text-muted hover:text-foreground transition-colors"
         >
           <i class="pi pi-times text-lg"></i>
         </button>
@@ -76,7 +76,7 @@ const handleSubmit = async () => {
         </div>
 
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1"
+          <label class="block text-xs font-semibold uppercase tracking-wider text-muted mb-1"
             >Título *</label
           >
           <input
@@ -89,7 +89,7 @@ const handleSubmit = async () => {
         </div>
 
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1"
+          <label class="block text-xs font-semibold uppercase tracking-wider text-muted mb-1"
             >Descrição</label
           >
           <textarea
@@ -101,14 +101,14 @@ const handleSubmit = async () => {
         </div>
 
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1"
+          <label class="block text-xs font-semibold uppercase tracking-wider text-muted mb-1"
             >Prazo Final *</label
           >
           <input
             v-model="deadline"
             type="date"
             required
-            class="w-full px-3 py-2 border border-border rounded-xl bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-700"
+            class="w-full px-3 py-2 border border-border rounded-xl bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground"
           />
         </div>
 
@@ -126,7 +126,7 @@ const handleSubmit = async () => {
           <button
             type="button"
             @click="$emit('close')"
-            class="px-4 py-2 text-sm font-medium text-muted hover:text-slate-800 transition-colors"
+            class="px-4 py-2 text-sm font-medium text-muted hover:text-foreground transition-colors"
           >
             Cancelar
           </button>

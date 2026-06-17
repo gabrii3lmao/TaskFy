@@ -1,6 +1,4 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-
 const routes: RouteRecordRaw[] = [
   {
     path: '/login',
@@ -33,6 +31,16 @@ const routes: RouteRecordRaw[] = [
         name: 'Notifications',
         component: () => import('@/modules/notifications/NotificationsView.vue'),
       },
+      {
+        path: 'tasks',
+        name: 'Tasks',
+        component: () => import('@/modules/tasks/TasksView.vue'),
+      },
+      {
+        path: 'workload',
+        name: 'Workload',
+        component: () => import('@/modules/workloads/WorkloadView.vue'),
+      },
       // Rota Dinâmica das Tarefas do Projeto ligada corretamente
       {
         path: 'projects/:id',
@@ -49,7 +57,6 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore()
   const token = localStorage.getItem('@TaskFy:token')
 
   if (to.meta.requiresAuth && !token) {

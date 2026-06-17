@@ -73,7 +73,7 @@ onMounted(() => {
   <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+        <h1 class="text-2xl font-bold text-foreground flex items-center gap-2">
           <i class="pi pi-folder-open text-primary"></i>
           Projetos Ativos
         </h1>
@@ -106,9 +106,9 @@ onMounted(() => {
         :key="i"
         class="bg-surface border border-border rounded-2xl p-6 space-y-4 animate-pulse"
       >
-        <div class="h-6 bg-slate-100 rounded w-2/3"></div>
-        <div class="h-4 bg-slate-50 rounded w-full"></div>
-        <div class="h-2 bg-slate-100 rounded-full w-full mt-6"></div>
+        <div class="h-6 bg-background rounded w-2/3"></div>
+        <div class="h-4 bg-background rounded w-full"></div>
+        <div class="h-2 bg-background rounded-full w-full mt-6"></div>
       </div>
     </div>
 
@@ -118,7 +118,7 @@ onMounted(() => {
     >
       <div class="space-y-3">
         <i class="pi pi-folder text-5xl text-muted"></i>
-        <h3 class="text-lg font-semibold text-slate-800">Nenhum projeto encontrado</h3>
+        <h3 class="text-lg font-semibold text-foreground">Nenhum projeto encontrado</h3>
         <p class="text-sm text-muted">
           Você ainda não faz parte de nenhuma equipe com projetos ativos ou nenhum projeto foi
           cadastrado.
@@ -140,7 +140,7 @@ onMounted(() => {
         </div>
 
         <div>
-          <h3 class="text-lg font-semibold text-slate-800 pr-20 truncate" :title="project.title">
+          <h3 class="text-lg font-semibold text-foreground max-w-[calc(100%-5rem)] truncate" :title="project.title">
             {{ project.title }}
           </h3>
 

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { useThemeStore } from '@/stores/theme'
 import { useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
+const themeStore = useThemeStore()
 const router = useRouter()
 
 // Controle de abertura da sidebar no mobile
@@ -21,6 +23,7 @@ const closeSidebar = () => {
 
 const navLinks = [
   { name: 'Dashboard', label: 'Agenda', icon: 'pi pi-calendar' },
+  { name: 'Tasks', label: 'Tarefas', icon: 'pi pi-check-square' },
   { name: 'Teams', label: 'Equipes', icon: 'pi pi-users' },
   { name: 'Projects', label: 'Projetos', icon: 'pi pi-folder' },
   { name: 'Notifications', label: 'Notificações', icon: 'pi pi-bell' },
@@ -33,7 +36,7 @@ const navLinks = [
       <div
         v-if="isSidebarOpen"
         @click="closeSidebar"
-        class="fixed inset-0 bg-slate-900/50 z-40 lg:hidden backdrop-blur-sm"
+        class="fixed inset-0 bg-overlay z-40 lg:hidden backdrop-blur-sm"
       ></div>
     </transition>
 
@@ -45,7 +48,7 @@ const navLinks = [
     >
       <div class="p-6 flex items-center justify-between">
         <h1 class="text-2xl font-bold text-primary">TaskFy</h1>
-        <button @click="closeSidebar" class="p-1 text-muted hover:text-slate-800 lg:hidden">
+        <button @click="closeSidebar" class="p-1 text-muted hover:text-foreground lg:hidden">
           <i class="pi pi-times text-xl"></i>
         </button>
       </div>
@@ -59,7 +62,7 @@ const navLinks = [
           class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors"
           exact-active-class="bg-primary/10 text-primary font-semibold"
           :class="[
-            $route.name === link.name ? '' : 'text-muted hover:bg-slate-50 hover:text-slate-900',
+            $route.name === link.name ? '' : 'text-muted hover:bg-background hover:text-foreground',
           ]"
         >
           <i :class="link.icon" class="text-lg mr-3"></i>
@@ -89,7 +92,7 @@ const navLinks = [
             <i class="pi pi-bars text-lg"></i>
           </button>
 
-          <h2 class="font-semibold text-slate-800 text-sm md:text-base truncate">
+          <h2 class="font-semibold text-foreground text-sm md:text-base truncate">
             Olá, {{ authStore.user?.name }}
           </h2>
         </div>
@@ -104,8 +107,16 @@ const navLinks = [
             <span class="sm:hidden">Carga</span>
           </button>
 
+          <button
+            @click="themeStore.toggle"
+            class="p-2 text-muted hover:text-primary rounded-lg border border-border bg-background hover:border-primary/30 transition-colors"
+            :title="themeStore.isDark ? 'Modo claro' : 'Modo escuro'"
+          >
+            <i :class="themeStore.isDark ? 'pi pi-sun' : 'pi pi-moon'" class="text-sm"></i>
+          </button>
+
           <div
-            class="w-8 h-8 rounded-full bg-slate-200 border border-border flex items-center justify-center text-xs font-bold text-slate-600 shrink-0"
+            class="w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center text-xs font-bold text-muted shrink-0"
           >
             {{ authStore.user?.name.charAt(0).toUpperCase() }}
           </div>

@@ -37,7 +37,7 @@ const handleComplete = async () => {
 <template>
   <div
     class="bg-surface border border-border rounded-xl p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all duration-300"
-    :class="{ 'opacity-60 bg-slate-50': task.status === 'completed' }"
+    :class="{ 'opacity-60 bg-background': task.status === 'completed' }"
   >
     <div class="flex-1">
       <div class="flex items-center gap-2 mb-1">
@@ -46,7 +46,7 @@ const handleComplete = async () => {
           :class="task.status === 'completed' ? 'text-success' : 'text-muted'"
         ></i>
         <h4
-          class="font-semibold text-slate-800 text-sm"
+          class="font-semibold text-foreground text-sm"
           :class="{ 'line-through text-muted': task.status === 'completed' }"
         >
           {{ task.title }}

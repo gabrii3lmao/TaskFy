@@ -17,24 +17,17 @@
     </div>
 
     <!-- Filters -->
-    <div class="flex items-center gap-3 p-2 bg-surface border border-border rounded-xl">
-      <button class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium">Todas</button>
-
-      <button
-        class="px-4 py-2 rounded-lg text-sm text-muted hover:bg-background transition-all duration-200"
-      >
+    <div class="flex flex-wrap items-center gap-2 p-2 bg-surface border border-border rounded-xl">
+      <button class="px-3 md:px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium">
+        Todas
+      </button>
+      <button class="px-3 md:px-4 py-2 rounded-lg text-sm text-muted hover:bg-background transition-all duration-200">
         Não lidas
       </button>
-
-      <button
-        class="px-4 py-2 rounded-lg text-sm text-muted hover:bg-background transition-all duration-200"
-      >
+      <button class="px-3 md:px-4 py-2 rounded-lg text-sm text-muted hover:bg-background transition-all duration-200">
         Menções
       </button>
-
-      <button
-        class="px-4 py-2 rounded-lg text-sm text-muted hover:bg-background transition-all duration-200"
-      >
+      <button class="px-3 md:px-4 py-2 rounded-lg text-sm text-muted hover:bg-background transition-all duration-200">
         Projetos
       </button>
     </div>
