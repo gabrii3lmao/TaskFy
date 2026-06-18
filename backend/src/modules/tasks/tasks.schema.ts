@@ -99,3 +99,18 @@ export const createTaskSchema = z.object({
       .default([]),
   }),
 });
+
+export const updateTaskSchema = z.object({
+  body: z.object({
+    title: z.string().min(3).optional(),
+    description: z.string().optional(),
+    deadline: z.coerce.date().optional(),
+    status: z.enum(["not_started", "in_progress", "completed"]).optional(),
+  }),
+});
+
+export const reportDelaySchema = z.object({
+  body: z.object({
+    reason: z.string().max(500, "Motivo deve ter no máximo 500 caracteres").optional(),
+  }),
+});

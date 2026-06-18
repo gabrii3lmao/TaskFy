@@ -1,0 +1,20 @@
+import { Router } from "express";
+import { validate } from "../../middlewares/validationMiddleware.js";
+import { requireAuth } from "../../middlewares/authMiddleware.js";
+import { TasksController } from "./tasks.controller.js";
+import { createTaskSchema, updateTaskSchema, reportDelaySchema, } from "./tasks.schema.js";
+const tasksRouter = Router();
+tasksRouter.use(requireAuth);
+tasksRouter.get("/dashboard", TasksController.getDashboard);
+tasksRouter.get("/my-tasks", TasksController.getMyTasks);
+tasksRouter.get("/", TasksController.getTasksByProject);
+tasksRouter.post("/", validate(createTaskSchema), TasksController.create);
+tasksRouter.get("/:taskId/subtasks", TasksController.getSubtasks);
+tasksRouter.patch("/:taskId/complete", TasksController.complete);
+tasksRouter.patch("/:taskId", validate(updateTaskSchema), TasksController.update);
+tasksRouter.delete("/:taskId", TasksController.delete);
+tasksRouter.post("/:taskId/start", TasksController.startTimer);
+tasksRouter.post("/:taskId/stop", TasksController.stopTimer);
+tasksRouter.post("/:taskId/report-delay", validate(reportDelaySchema), TasksController.reportDelay);
+export { tasksRouter };
+//# sourceMappingURL=tasks.routes.js.map

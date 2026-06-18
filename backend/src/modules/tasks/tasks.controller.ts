@@ -15,6 +15,46 @@ export class TasksController {
     }
   }
 
+  static async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { taskId } = req.params;
+      const userId = req.user?.id;
+      const updateData = req.body;
+
+      if (!userId) {
+        throw new HttpException("Usuário não autenticado", 401);
+      }
+
+      const task = await TasksService.updateTask(
+        taskId as string,
+        updateData,
+        userId,
+      );
+      res.status(200).json({ status: "success", data: task });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { taskId } = req.params;
+      const userId = req.user?.id;
+
+      if (!userId) {
+        throw new HttpException("Usuário não autenticado", 401);
+      }
+
+      const result = await TasksService.deleteTask(
+        taskId as string,
+        userId,
+      );
+      res.status(200).json({ status: "success", data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async complete(req: Request, res: Response, next: NextFunction) {
     try {
       const { taskId } = req.params;
@@ -44,6 +84,7 @@ export class TasksController {
         taskId as string,
         userId,
       );
+
       res.status(200).json({ status: "success", data: result });
     } catch (error) {
       next(error);
@@ -62,6 +103,18 @@ export class TasksController {
       const result = await TasksService.stopTaskTimer(taskId as string, userId);
 
       res.status(200).json({ status: "success", data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getSubtasks(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { taskId } = req.params;
+
+      const subtasks = await TasksService.getSubtasks(taskId as string);
+
+      res.status(200).json({ status: "success", data: subtasks });
     } catch (error) {
       next(error);
     }
@@ -95,6 +148,42 @@ export class TasksController {
       }
       const tasks = await TasksService.getTasksByProject(projectId as string);
       res.status(200).json({ status: "success", data: tasks });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getMyTasks(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+
+      if (!userId) {
+        throw new HttpException("Usuário não autenticado", 401);
+      }
+      const tasks = await TasksDashboardService.getUserTasks(userId);
+      res.status(200).json({ status: "success", data: tasks });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async reportDelay(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { taskId } = req.params;
+      const userId = req.user?.id;
+      const { reason } = req.body;
+
+      if (!userId) {
+        throw new HttpException("Usuário não autenticado", 401);
+      }
+
+      const result = await TasksService.reportDelay(
+        taskId as string,
+        userId,
+        reason,
+      );
+
+      res.status(200).json({ status: "success", data: result });
     } catch (error) {
       next(error);
     }

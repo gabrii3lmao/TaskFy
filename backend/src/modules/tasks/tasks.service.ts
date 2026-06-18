@@ -1,8 +1,11 @@
 import { db } from "../../core/db.js";
 import { tasks, taskAssignees, timeLogs } from "./tasks.schema.js";
+import { projects } from "../projects/projects.schema.js";
+import { users } from "../users/users.schema.js";
 import { and, eq, isNull } from "drizzle-orm";
 import { HttpException } from "../../core/errorHandler.js";
 import type { Task } from "../../types/task.js";
+import { NotificationsService } from "../notifications/notifications.service.js";
 
 export class TasksService {
   static async getTasksByProject(projectId: string) {
@@ -10,23 +13,93 @@ export class TasksService {
       .select()
       .from(tasks)
       .where(eq(tasks.projectId, projectId));
-      
+
     return projectTasks;
   }
+
   static async createTask(data: Task) {
     return db.transaction(async (tx) => {
       const [newTask] = await tx.insert(tasks).values(data).returning();
 
       if (data.assigneeIds && data.assigneeIds.length > 0) {
-        const assigneeIds = data.assigneeIds.map((userId) => ({
+        const assigneeIds = data.assigneeIds.map((userId: string) => ({
           taskId: newTask!.id,
           userId,
         }));
 
         await tx.insert(taskAssignees).values(assigneeIds);
       }
+
       return newTask;
     });
+  }
+
+  static async updateTask(
+    taskId: string,
+    data: Partial<{
+      title: string;
+      description: string;
+      deadline: Date;
+      status: "not_started" | "in_progress" | "completed";
+    }>,
+    requestUserId: string,
+  ) {
+    const [isAssignee] = await db
+      .select()
+      .from(taskAssignees)
+      .where(
+        and(
+          eq(taskAssignees.taskId, taskId),
+          eq(taskAssignees.userId, requestUserId),
+        ),
+      );
+
+    if (!isAssignee) {
+      throw new HttpException(
+        "Acesso negado: Apenas encarregados pela tarefa podem editá-la.",
+        403,
+      );
+    }
+
+    const [updatedTask] = await db
+      .update(tasks)
+      .set(data)
+      .where(eq(tasks.id, taskId))
+      .returning();
+
+    return updatedTask;
+  }
+
+  static async deleteTask(taskId: string, requestUserId: string) {
+    const [isAssignee] = await db
+      .select()
+      .from(taskAssignees)
+      .where(
+        and(
+          eq(taskAssignees.taskId, taskId),
+          eq(taskAssignees.userId, requestUserId),
+        ),
+      );
+
+    if (!isAssignee) {
+      throw new HttpException(
+        "Acesso negado: Apenas encarregados podem excluir a tarefa.",
+        403,
+      );
+    }
+
+    await db.delete(tasks).where(eq(tasks.id, taskId));
+
+    return { message: "Tarefa excluída com sucesso." };
+  }
+
+  static async getSubtasks(taskId: string) {
+    const subtasks = await db
+      .select()
+      .from(tasks)
+      .where(eq(tasks.parentTaskId, taskId));
+
+    return subtasks;
   }
 
   static async completeTask(task_id: string, requestUserId: string) {
@@ -129,5 +202,47 @@ export class TasksService {
       .where(eq(timeLogs.id, activeTimer.id));
 
     return { message: "Cronômetro pausado com sucesso." };
+  }
+
+  static async reportDelay(
+    taskId: string,
+    userId: string,
+    reason?: string,
+  ) {
+    const [task] = await db
+      .select()
+      .from(tasks)
+      .where(eq(tasks.id, taskId));
+
+    if (!task) {
+      throw new HttpException("Tarefa não encontrada", 404);
+    }
+
+    const [project] = await db
+      .select()
+      .from(projects)
+      .where(eq(projects.id, task.projectId));
+
+    if (!project) {
+      throw new HttpException("Projeto não encontrado", 404);
+    }
+
+    const [userInfo] = await db
+      .select({ name: users.name })
+      .from(users)
+      .where(eq(users.id, userId));
+
+    const employeeName = userInfo?.name ?? "Um funcionário";
+
+    await NotificationsService.createNotification({
+      userId: project.supervisorId,
+      type: "delay_report",
+      title: "Possível atraso reportado",
+      message: `${employeeName} reportou um possível atraso na tarefa "${task.title}"${reason ? `: ${reason}` : "."}`,
+      taskId: task.id,
+      projectId: project.id,
+    });
+
+    return { message: "Alerta de atraso enviado ao supervisor com sucesso." };
   }
 }

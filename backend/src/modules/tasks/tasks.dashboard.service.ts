@@ -42,8 +42,11 @@ export class TasksDashboardService {
       .select({
         id: tasks.id,
         title: tasks.title,
+        description: tasks.description,
         status: tasks.status,
         deadline: tasks.deadline,
+        projectId: tasks.projectId,
+        parentTaskId: tasks.parentTaskId,
         projectName: projects.title,
       })
       .from(tasks)

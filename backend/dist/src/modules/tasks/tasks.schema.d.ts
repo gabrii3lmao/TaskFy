@@ -1,0 +1,326 @@
+export declare const tasksStatusEnum: import("drizzle-orm/pg-core").PgEnum<["not_started", "in_progress", "completed"]>;
+export declare const deadlineStatusEnum: import("drizzle-orm/pg-core").PgEnum<["on_time", "delayed", "ahead"]>;
+export declare const tasks: import("drizzle-orm/pg-core").PgTableWithColumns<{
+    name: "tasks";
+    schema: undefined;
+    columns: {
+        id: import("drizzle-orm/pg-core").PgColumn<{
+            name: "id";
+            tableName: "tasks";
+            dataType: "string";
+            columnType: "PgUUID";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: true;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        projectId: import("drizzle-orm/pg-core").PgColumn<{
+            name: "project_id";
+            tableName: "tasks";
+            dataType: "string";
+            columnType: "PgUUID";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        parentTaskId: import("drizzle-orm/pg-core").PgColumn<{
+            name: "parent_task_id";
+            tableName: "tasks";
+            dataType: "string";
+            columnType: "PgUUID";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        title: import("drizzle-orm/pg-core").PgColumn<{
+            name: "title";
+            tableName: "tasks";
+            dataType: "string";
+            columnType: "PgVarchar";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            length: 255;
+        }>;
+        description: import("drizzle-orm/pg-core").PgColumn<{
+            name: "description";
+            tableName: "tasks";
+            dataType: "string";
+            columnType: "PgText";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        deadline: import("drizzle-orm/pg-core").PgColumn<{
+            name: "deadline";
+            tableName: "tasks";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        status: import("drizzle-orm/pg-core").PgColumn<{
+            name: "status";
+            tableName: "tasks";
+            dataType: "string";
+            columnType: "PgEnumColumn";
+            data: "not_started" | "in_progress" | "completed";
+            driverParam: string;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: ["not_started", "in_progress", "completed"];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        deadlineStatus: import("drizzle-orm/pg-core").PgColumn<{
+            name: "deadline_status";
+            tableName: "tasks";
+            dataType: "string";
+            columnType: "PgEnumColumn";
+            data: "on_time" | "delayed" | "ahead";
+            driverParam: string;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: ["on_time", "delayed", "ahead"];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        createdAt: import("drizzle-orm/pg-core").PgColumn<{
+            name: "created_at";
+            tableName: "tasks";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
+            driverParam: string;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+    };
+    dialect: "pg";
+}>;
+export declare const taskAssignees: import("drizzle-orm/pg-core").PgTableWithColumns<{
+    name: "task_assignees";
+    schema: undefined;
+    columns: {
+        taskId: import("drizzle-orm/pg-core").PgColumn<{
+            name: "task_id";
+            tableName: "task_assignees";
+            dataType: "string";
+            columnType: "PgUUID";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        userId: import("drizzle-orm/pg-core").PgColumn<{
+            name: "user_id";
+            tableName: "task_assignees";
+            dataType: "string";
+            columnType: "PgUUID";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+    };
+    dialect: "pg";
+}>;
+export declare const timeLogs: import("drizzle-orm/pg-core").PgTableWithColumns<{
+    name: "time_logs";
+    schema: undefined;
+    columns: {
+        id: import("drizzle-orm/pg-core").PgColumn<{
+            name: "id";
+            tableName: "time_logs";
+            dataType: "string";
+            columnType: "PgUUID";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: true;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        taskId: import("drizzle-orm/pg-core").PgColumn<{
+            name: "task_id";
+            tableName: "time_logs";
+            dataType: "string";
+            columnType: "PgUUID";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        userId: import("drizzle-orm/pg-core").PgColumn<{
+            name: "user_id";
+            tableName: "time_logs";
+            dataType: "string";
+            columnType: "PgUUID";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        startTime: import("drizzle-orm/pg-core").PgColumn<{
+            name: "start_time";
+            tableName: "time_logs";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
+            driverParam: string;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        endTime: import("drizzle-orm/pg-core").PgColumn<{
+            name: "end_time";
+            tableName: "time_logs";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+    };
+    dialect: "pg";
+}>;
+import { z } from "zod";
+export declare const createTaskSchema: z.ZodObject<{
+    body: z.ZodObject<{
+        title: z.ZodString;
+        description: z.ZodOptional<z.ZodString>;
+        deadline: z.ZodCoercedDate<unknown>;
+        projectId: z.ZodString;
+        parentTaskId: z.ZodOptional<z.ZodString>;
+        assigneeIds: z.ZodDefault<z.ZodArray<z.ZodString>>;
+    }, z.core.$strip>;
+}, z.core.$strip>;
+export declare const updateTaskSchema: z.ZodObject<{
+    body: z.ZodObject<{
+        title: z.ZodOptional<z.ZodString>;
+        description: z.ZodOptional<z.ZodString>;
+        deadline: z.ZodOptional<z.ZodCoercedDate<unknown>>;
+        status: z.ZodOptional<z.ZodEnum<{
+            not_started: "not_started";
+            in_progress: "in_progress";
+            completed: "completed";
+        }>>;
+    }, z.core.$strip>;
+}, z.core.$strip>;
+export declare const reportDelaySchema: z.ZodObject<{
+    body: z.ZodObject<{
+        reason: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>;
+}, z.core.$strip>;
+//# sourceMappingURL=tasks.schema.d.ts.map
