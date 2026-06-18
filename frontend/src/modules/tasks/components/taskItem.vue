@@ -141,6 +141,13 @@ const handleDelete = async () => {
             {{ task.title }}
           </h4>
           <span
+            v-if="task.parentTaskId"
+            class="text-[10px] font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded flex items-center gap-1 shrink-0"
+          >
+            <i class="pi pi-sitemap text-[9px]"></i>
+            Subtarefa
+          </span>
+          <span
             v-if="isExpired"
             class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-danger/10 text-danger border border-danger/20"
           >

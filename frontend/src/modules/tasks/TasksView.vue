@@ -124,12 +124,21 @@ onMounted(() => {
               ATRASADA
             </span>
           </div>
-          <h4
-            class="font-semibold text-foreground text-sm mt-1"
-            :class="{ 'line-through text-muted': task.status === 'completed' }"
-          >
-            {{ task.title }}
-          </h4>
+            <h4
+              class="font-semibold text-foreground text-sm mt-1"
+              :class="{ 'line-through text-muted': task.status === 'completed' }"
+            >
+              <span class="flex items-center gap-2">
+                {{ task.title }}
+                <span
+                  v-if="task.parentTaskId"
+                  class="text-[10px] font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded flex items-center gap-1 shrink-0"
+                >
+                  <i class="pi pi-sitemap text-[9px]"></i>
+                  Subtarefa
+                </span>
+              </span>
+            </h4>
           <p class="text-xs text-muted mt-0.5 line-clamp-1">{{ task.description || 'Sem descrição' }}</p>
         </div>
 
