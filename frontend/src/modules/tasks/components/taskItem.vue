@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useTaskStore } from '@/stores/task'
-import type { Task } from '@/services/taskService'
+import { taskService, type Task } from '@/services/taskService'
 import CreateTaskModal from '@/modules/tasks/components/createTaskModal.vue'
 
 const props = defineProps<{ task: Task }>()
@@ -67,6 +67,20 @@ const handleSubtaskCreated = () => {
   showCreateSubtask.value = false
   toggleSubtasks()
   emit('subtask-created')
+}
+
+const handleToggleSubtask = async (sub: Task) => {
+  try {
+    if (sub.status === 'completed') {
+      await taskService.updateTask(sub.id, { status: 'not_started' })
+      sub.status = 'not_started'
+    } else {
+      await taskService.completeTask(sub.id)
+      sub.status = 'completed'
+    }
+  } catch (error: any) {
+    alert(error.response?.data?.message || 'Erro ao alternar subtarefa.')
+  }
 }
 
 const handleReportDelay = async () => {
@@ -235,7 +249,8 @@ const handleDelete = async () => {
         <div
           v-for="sub in subtasks"
           :key="sub.id"
-          class="flex items-center justify-between gap-2 px-3 py-2 bg-background rounded-lg border border-border"
+          @click="handleToggleSubtask(sub)"
+          class="flex items-center justify-between gap-2 px-3 py-2 bg-background rounded-lg border border-border cursor-pointer hover:bg-surface transition-colors"
         >
           <div class="flex items-center gap-2 min-w-0">
             <i
