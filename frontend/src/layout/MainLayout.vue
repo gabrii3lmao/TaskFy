@@ -52,11 +52,7 @@ const navLinks = [
         class="p-5 lg:p-6 border-b border-border flex items-center justify-between bg-gradient-to-r from-primary/5 to-transparent"
       >
         <div class="flex items-center gap-3">
-          <div
-            class="w-9 h-9 rounded-xl bg-primary text-white flex items-center justify-center shadow-sm"
-          >
-            <i class="pi pi-check-square text-sm"></i>
-          </div>
+          <img src="/logo-taskfy.svg" alt="TaskFy" class="h-8 w-auto" />
           <div>
             <h1 class="text-lg font-bold text-foreground leading-tight">TaskFy</h1>
             <p class="text-[10px] text-muted leading-tight">Gestão de tarefas</p>
