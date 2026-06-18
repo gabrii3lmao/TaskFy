@@ -1,98 +1,22 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useTaskStore } from '@/stores/task'
 
-interface MockTask {
-  id: string
-  title: string
-  description: string
-  status: 'completed' | 'in_progress' | 'not_started'
-  deadline: string
-  projectName: string
-  assignee: string
-}
+const taskStore = useTaskStore()
 
 const statusFilter = ref<string>('all')
 const projectFilter = ref<string>('all')
 
-const projects = ['Atlas', 'Finance', 'TaskFy Mobile', 'Core API']
-
-const tasks = ref<MockTask[]>([
-  {
-    id: '1',
-    title: 'Implementar autenticação JWT',
-    description: 'Criar middleware de autenticação com refresh token',
-    status: 'completed',
-    deadline: '2026-06-10',
-    projectName: 'Atlas',
-    assignee: 'Marina Costa',
-  },
-  {
-    id: '2',
-    title: 'Criar dashboard financeiro',
-    description: 'Dashboard com gráficos de receita e despesa',
-    status: 'in_progress',
-    deadline: '2026-06-20',
-    projectName: 'Finance',
-    assignee: 'Rafael Lima',
-  },
-  {
-    id: '3',
-    title: 'Refatorar módulo de usuários',
-    description: 'Separar responsabilidades do service atual',
-    status: 'not_started',
-    deadline: '2026-06-25',
-    projectName: 'Atlas',
-    assignee: 'Gabriel Silva',
-  },
-  {
-    id: '4',
-    title: 'Configurar pipeline CI/CD',
-    description: 'GitHub Actions com testes e deploy automático',
-    status: 'in_progress',
-    deadline: '2026-06-18',
-    projectName: 'Core API',
-    assignee: 'Marina Costa',
-  },
-  {
-    id: '5',
-    title: 'Criar tela de notificações',
-    description: 'Listagem com filtros e marcador de lidas',
-    status: 'completed',
-    deadline: '2026-06-05',
-    projectName: 'TaskFy Mobile',
-    assignee: 'Rafael Lima',
-  },
-  {
-    id: '6',
-    title: 'Integrar gateway de pagamento',
-    description: 'Stripe com webhooks para confirmação',
-    status: 'not_started',
-    deadline: '2026-07-01',
-    projectName: 'Finance',
-    assignee: 'Gabriel Silva',
-  },
-  {
-    id: '7',
-    title: 'Otimizar queries do Dashboard',
-    description: 'Reduzir tempo de resposta das consultas SQL',
-    status: 'in_progress',
-    deadline: '2026-06-15',
-    projectName: 'Core API',
-    assignee: 'Marina Costa',
-  },
-  {
-    id: '8',
-    title: 'Implementar modo offline',
-    description: 'Service worker e cache de dados locais',
-    status: 'not_started',
-    deadline: '2026-07-10',
-    projectName: 'TaskFy Mobile',
-    assignee: 'Rafael Lima',
-  },
-])
+const projectNames = computed(() => {
+  const names = new Set<string>()
+  taskStore.myTasksFlat.forEach((t) => {
+    if (t.projectName) names.add(t.projectName)
+  })
+  return Array.from(names).sort()
+})
 
 const filteredTasks = computed(() => {
-  return tasks.value.filter((t) => {
+  return taskStore.myTasksFlat.filter((t) => {
     if (statusFilter.value !== 'all' && t.status !== statusFilter.value) return false
     if (projectFilter.value !== 'all' && t.projectName !== projectFilter.value) return false
     return true
@@ -110,9 +34,18 @@ const statusBadge = (status: string) => {
 }
 
 const formatDate = (dateString: string) => {
-  const date = new Date(dateString + 'T00:00:00')
+  const date = new Date(dateString)
   return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date)
 }
+
+const isExpired = (task: { status: string; deadline: string }) => {
+  if (task.status === 'completed') return false
+  return new Date(task.deadline) < new Date()
+}
+
+onMounted(() => {
+  taskStore.loadMyTasks()
+})
 </script>
 
 <template>
@@ -146,15 +79,19 @@ const formatDate = (dateString: string) => {
         class="px-3 py-1.5 text-sm bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
       >
         <option value="all">Todos os projetos</option>
-        <option v-for="p in projects" :key="p" :value="p">{{ p }}</option>
+        <option v-for="p in projectNames" :key="p" :value="p">{{ p }}</option>
       </select>
 
       <span class="text-xs text-muted ml-auto">
-        {{ filteredTasks.length }} de {{ tasks.length }} tarefas
+        {{ filteredTasks.length }} de {{ taskStore.myTasksFlat.length }} tarefas
       </span>
     </div>
 
-    <div v-if="filteredTasks.length === 0" class="bg-surface border border-dashed border-border rounded-2xl p-12 text-center space-y-3">
+    <div v-if="taskStore.loading" class="space-y-4">
+      <div v-for="i in 3" :key="i" class="h-20 bg-surface border border-border animate-pulse rounded-xl"></div>
+    </div>
+
+    <div v-else-if="filteredTasks.length === 0" class="bg-surface border border-dashed border-border rounded-2xl p-12 text-center space-y-3">
       <i class="pi pi-inbox text-4xl text-muted/50"></i>
       <h3 class="text-lg font-semibold text-foreground">Nenhuma tarefa encontrada</h3>
       <p class="text-sm text-muted">Tente ajustar os filtros para ver mais resultados.</p>
@@ -178,7 +115,13 @@ const formatDate = (dateString: string) => {
             </span>
             <span class="text-xs text-muted font-medium flex items-center gap-1">
               <i class="pi pi-folder text-[10px]"></i>
-              {{ task.projectName }}
+              {{ task.projectName || 'Sem projeto' }}
+            </span>
+            <span
+              v-if="isExpired(task)"
+              class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-danger/10 text-danger border border-danger/20"
+            >
+              ATRASADA
             </span>
           </div>
           <h4
@@ -187,7 +130,7 @@ const formatDate = (dateString: string) => {
           >
             {{ task.title }}
           </h4>
-          <p class="text-xs text-muted mt-0.5 line-clamp-1">{{ task.description }}</p>
+          <p class="text-xs text-muted mt-0.5 line-clamp-1">{{ task.description || 'Sem descrição' }}</p>
         </div>
 
         <div class="flex items-center gap-4 shrink-0">
@@ -195,20 +138,15 @@ const formatDate = (dateString: string) => {
             <p class="text-xs text-muted">Prazo</p>
             <p
               class="text-xs font-semibold"
-              :class="task.status !== 'completed' && new Date(task.deadline + 'T00:00:00') < new Date() ? 'text-danger' : 'text-foreground'"
+              :class="isExpired(task) ? 'text-danger' : 'text-foreground'"
             >
               {{ formatDate(task.deadline) }}
             </p>
-          </div>
-          <div class="text-right hidden sm:block">
-            <p class="text-xs text-muted">Responsável</p>
-            <p class="text-xs font-semibold text-foreground">{{ task.assignee }}</p>
           </div>
         </div>
 
         <div class="sm:hidden flex items-center gap-4 text-xs text-muted border-t border-border pt-2 mt-2">
           <span class="flex items-center gap-1"><i class="pi pi-calendar"></i> {{ formatDate(task.deadline) }}</span>
-          <span class="flex items-center gap-1"><i class="pi pi-user"></i> {{ task.assignee }}</span>
         </div>
       </div>
     </div>

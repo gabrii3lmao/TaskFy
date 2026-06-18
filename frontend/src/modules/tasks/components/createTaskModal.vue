@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/auth'
 
 const props = defineProps<{
   projectId: string
+  parentTaskId?: string
 }>()
 
 const emit = defineEmits(['close', 'created'])
@@ -27,12 +28,12 @@ const handleSubmit = async () => {
   errorMessage.value = ''
 
   try {
-    // O PAYLOAD EXATO DO INSOMNIA (Passo 7)
     const newTask = await taskService.createTask({
       title: title.value,
       description: description.value,
       deadline: new Date(deadline.value).toISOString(),
       projectId: props.projectId,
+      parentTaskId: props.parentTaskId,
       assigneeIds: authStore.user ? [authStore.user.id] : [],
     })
 
@@ -56,7 +57,7 @@ const handleSubmit = async () => {
       <div class="p-6 border-b border-border flex items-center justify-between">
         <h2 class="text-lg font-bold text-foreground flex items-center gap-2">
           <i class="pi pi-check-square text-primary"></i>
-          Nova Tarefa
+          {{ parentTaskId ? 'Nova Subtarefa' : 'Nova Tarefa' }}
         </h2>
         <button
           @click="$emit('close')"
@@ -73,6 +74,11 @@ const handleSubmit = async () => {
         >
           <i class="pi pi-exclamation-triangle shrink-0"></i>
           <span>{{ errorMessage }}</span>
+        </div>
+
+        <div v-if="parentTaskId" class="p-2.5 bg-background border border-border rounded-xl flex items-center gap-2 text-xs text-muted">
+          <i class="pi pi-sitemap text-primary"></i>
+          <span>Criando subtarefa vinculada à tarefa principal</span>
         </div>
 
         <div>
@@ -136,7 +142,7 @@ const handleSubmit = async () => {
             class="px-4 py-2 bg-primary hover:bg-secondary text-white text-sm font-medium rounded-xl transition-colors shadow-sm disabled:opacity-50 flex items-center gap-2"
           >
             <i v-if="loading" class="pi pi-spinner animate-spin"></i>
-            <span>{{ loading ? 'Salvando...' : 'Criar Tarefa' }}</span>
+            <span>{{ loading ? 'Salvando...' : 'Criar' }}</span>
           </button>
         </div>
       </form>
