@@ -5,5 +5,6 @@ import { WorkloadService } from "./users.workload.service.js";
 const usersRouter = Router();
 usersRouter.get("/search", requireAuth, UsersController.searchUsers);
 usersRouter.get("/workload", requireAuth, UsersController.getUsersWorkloadBalance);
+usersRouter.get("/workload/members", requireAuth, UsersController.getTeamMemberTaskBreakdown);
 export { usersRouter };
 //# sourceMappingURL=users.routes.js.map

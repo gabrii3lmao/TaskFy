@@ -7,5 +7,13 @@ export declare class WorkloadService {
         name: string;
         avaliableHours: number;
     }[]>;
+    static getTeamMemberTaskBreakdown(teamId: string): Promise<{
+        id: string;
+        name: string;
+        totalTasks: number;
+        completedTasks: number;
+        inProgressTasks: number;
+        pendingTasks: number;
+    }[]>;
 }
 //# sourceMappingURL=users.workload.service.d.ts.map

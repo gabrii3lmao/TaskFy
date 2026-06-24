@@ -41,4 +41,28 @@ export class UsersController {
       next(error);
     }
   }
+
+  static async getTeamMemberTaskBreakdown(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { teamId } = req.query;
+
+      if (!teamId) {
+        throw new HttpException(
+          "O ID da equipe é obrigatório.",
+          400,
+        );
+      }
+
+      const breakdown = await WorkloadService.getTeamMemberTaskBreakdown(
+        teamId as string,
+      );
+      return res.status(200).json({ status: "success", data: breakdown });
+    } catch (error) {
+      next(error);
+    }
+  }
 }

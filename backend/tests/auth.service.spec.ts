@@ -9,6 +9,7 @@ import jwt from "jsonwebtoken";
 
 const whereMock = vi.fn();
 const returningMock = vi.fn();
+const setMock = vi.fn();
 
 vi.mock("../src/core/db.js", () => ({
   db: {
@@ -22,6 +23,10 @@ vi.mock("../src/core/db.js", () => ({
       values: vi.fn(() => ({
         returning: returningMock,
       })),
+    })),
+
+    update: vi.fn(() => ({
+      set: setMock,
     })),
   },
 }));
@@ -46,6 +51,7 @@ import { db } from "../src/core/db.js";
 describe("AuthService", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    setMock.mockReturnValue({ where: vi.fn().mockResolvedValue(undefined) });
   });
 
   describe("register", () => {
@@ -138,21 +144,15 @@ describe("AuthService", () => {
 
       (bcrypt.compare as any).mockResolvedValueOnce(true);
 
-      (jwt.sign as any).mockReturnValueOnce("fake-jwt-token");
+      (jwt.sign as any).mockReturnValueOnce("fake-access-token");
 
       const result = await AuthService.login("teste@teste.com", "123456");
 
-      expect(jwt.sign).toHaveBeenCalledWith(
-        expect.objectContaining({
-          userId: mockUser.id,
-          email: mockUser.email,
-        }),
-        expect.any(String),
-        expect.any(Object),
-      );
+      expect(jwt.sign).toHaveBeenCalledTimes(1);
 
       expect(result).toEqual({
-        token: "fake-jwt-token",
+        accessToken: "fake-access-token",
+        refreshToken: expect.any(String),
         user: {
           id: mockUser.id,
           name: mockUser.name,

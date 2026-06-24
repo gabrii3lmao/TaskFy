@@ -22,5 +22,24 @@ export class AuthController {
       next(error);
     }
   }
-  
+
+  static async refresh(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { refreshToken } = req.body;
+      const data = await AuthService.refresh(refreshToken);
+      res.status(200).json({ status: "success", data });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async logout(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { refreshToken } = req.body;
+      const data = await AuthService.logout(refreshToken);
+      res.status(200).json({ status: "success", data });
+    } catch (error) {
+      next(error);
+    }
+  }
 }

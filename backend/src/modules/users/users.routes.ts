@@ -11,5 +11,10 @@ usersRouter.get(
   requireAuth,
   UsersController.getUsersWorkloadBalance,
 );
+usersRouter.get(
+  "/workload/members",
+  requireAuth,
+  UsersController.getTeamMemberTaskBreakdown,
+);
 
 export { usersRouter };

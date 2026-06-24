@@ -5,6 +5,8 @@ export const users = pgTable("users", {
     email: varchar("email", { length: 255 }).notNull().unique(),
     passwordHash: varchar("password_hash", { length: 255 }).notNull(),
     availableHours: integer("available_hours").notNull().default(40),
+    refreshTokenHash: varchar("refresh_token_hash", { length: 255 }),
+    refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 //# sourceMappingURL=users.schema.js.map

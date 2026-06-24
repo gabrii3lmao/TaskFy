@@ -1,7 +1,8 @@
 import { db, teamMembers } from "../../core/db.js";
 import { users } from "./users.schema.js";
-import { timeLogs } from "../tasks/tasks.schema.js";
-import { eq, sql } from "drizzle-orm";
+import { timeLogs, tasks, taskAssignees } from "../tasks/tasks.schema.js";
+import { projects } from "../projects/projects.schema.js";
+import { eq, and, sql } from "drizzle-orm";
 export class WorkloadService {
     static async getWorkloadBalance(teamId) {
         const workloadData = await db
@@ -34,6 +35,24 @@ export class WorkloadService {
             };
         });
         return report;
+    }
+    static async getTeamMemberTaskBreakdown(teamId) {
+        const breakdown = await db
+            .select({
+            id: users.id,
+            name: users.name,
+            totalTasks: sql `COUNT(*)`.mapWith(Number),
+            completedTasks: sql `COUNT(*) FILTER (WHERE ${tasks.status} = 'completed')`.mapWith(Number),
+            inProgressTasks: sql `COUNT(*) FILTER (WHERE ${tasks.status} = 'in_progress')`.mapWith(Number),
+            pendingTasks: sql `COUNT(*) FILTER (WHERE ${tasks.status} = 'not_started')`.mapWith(Number),
+        })
+            .from(users)
+            .innerJoin(teamMembers, and(eq(users.id, teamMembers.userId), eq(teamMembers.teamId, teamId)))
+            .innerJoin(taskAssignees, eq(users.id, taskAssignees.userId))
+            .innerJoin(tasks, eq(taskAssignees.taskId, tasks.id))
+            .innerJoin(projects, and(eq(tasks.projectId, projects.id), eq(projects.teamId, teamId)))
+            .groupBy(users.id, users.name);
+        return breakdown;
     }
 }
 //# sourceMappingURL=users.workload.service.js.map

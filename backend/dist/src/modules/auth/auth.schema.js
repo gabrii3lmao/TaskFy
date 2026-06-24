@@ -12,4 +12,9 @@ export const loginSchema = z.object({
         password: z.string().min(1, "A senha é obrigatória"),
     }),
 });
+export const refreshSchema = z.object({
+    body: z.object({
+        refreshToken: z.string().min(1, "Refresh token é obrigatório"),
+    }),
+});
 //# sourceMappingURL=auth.schema.js.map

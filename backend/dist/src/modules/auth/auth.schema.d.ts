@@ -12,4 +12,9 @@ export declare const loginSchema: z.ZodObject<{
         password: z.ZodString;
     }, z.z.core.$strip>;
 }, z.z.core.$strip>;
+export declare const refreshSchema: z.ZodObject<{
+    body: z.ZodObject<{
+        refreshToken: z.ZodString;
+    }, z.z.core.$strip>;
+}, z.z.core.$strip>;
 //# sourceMappingURL=auth.schema.d.ts.map
