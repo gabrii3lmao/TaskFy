@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useTaskStore } from '@/stores/task'
+import { useProjectTasks } from '@/composables/useTasks'
 import TaskItem from '@/modules/tasks/components/taskItem.vue'
 import CreateTaskModal from '@/modules/tasks/components/createTaskModal.vue'
 import { ref } from 'vue'
@@ -10,12 +9,12 @@ const route = useRoute()
 const router = useRouter()
 const projectId = route.params.id as string
 
-const taskStore = useTaskStore()
+const { tasks, isLoading, isError, error } = useProjectTasks(projectId)
 const showCreateModal = ref(false)
 
-onMounted(() => {
-  taskStore.loadTasks(projectId)
-})
+const handleTaskCreated = () => {
+  showCreateModal.value = false
+}
 </script>
 
 <template>
@@ -49,14 +48,14 @@ onMounted(() => {
     </div>
 
     <div
-      v-if="taskStore.errorMessage"
+      v-if="isError"
       class="p-4 bg-danger/10 border border-danger/20 text-danger rounded-xl flex items-center gap-2"
     >
       <i class="pi pi-exclamation-triangle"></i>
-      <span class="text-sm font-medium">{{ taskStore.errorMessage }}</span>
+      <span class="text-sm font-medium">{{ error instanceof Error ? error.message : 'Erro ao carregar tarefas.' }}</span>
     </div>
 
-    <div v-if="taskStore.loading" class="space-y-4">
+    <div v-if="isLoading" class="space-y-4">
       <div
         v-for="i in 3"
         :key="i"
@@ -65,7 +64,7 @@ onMounted(() => {
     </div>
 
     <div
-      v-else-if="taskStore.tasks.length === 0"
+      v-else-if="!tasks || tasks.length === 0"
       class="bg-surface border border-dashed border-border rounded-2xl p-12 text-center space-y-3"
     >
       <i class="pi pi-inbox text-4xl text-muted/50"></i>
@@ -80,14 +79,14 @@ onMounted(() => {
     </div>
 
     <div v-else class="space-y-3">
-      <TaskItem v-for="task in taskStore.tasks" :key="task.id" :task="task" />
+      <TaskItem v-for="task in tasks" :key="task.id" :task="task" />
     </div>
 
     <CreateTaskModal
       v-if="showCreateModal"
       :project-id="projectId"
       @close="showCreateModal = false"
-      @created="(newTask) => taskStore.tasks.unshift(newTask)"
+      @created="handleTaskCreated"
     />
   </div>
 </template>

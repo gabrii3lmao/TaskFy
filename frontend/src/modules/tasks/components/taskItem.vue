@@ -1,18 +1,14 @@
-<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useTaskStore } from '@/stores/task'
-import { taskService, type Task } from '@/services/taskService'
+import { useTaskMutations, useTaskSubtasks } from '@/composables/useTasks'
+import type { Task } from '@/services/taskService'
 import CreateTaskModal from '@/modules/tasks/components/createTaskModal.vue'
 
 const props = defineProps<{ task: Task }>()
 const emit = defineEmits(['subtask-created'])
-const taskStore = useTaskStore()
 
 const actionLoading = ref(false)
 const showSubtasks = ref(false)
-const subtasks = ref<Task[]>([])
-const subtasksLoading = ref(false)
 const showCreateSubtask = ref(false)
 const showDelayModal = ref(false)
 const delayReason = ref('')
@@ -20,23 +16,36 @@ const delaySending = ref(false)
 const showDeleteConfirm = ref(false)
 const deleteLoading = ref(false)
 
+const {
+  toggleTimer,
+  completeTask,
+  deleteTask,
+  reportDelay,
+  toggleSubtask,
+} = useTaskMutations()
+
+const { subtasks, isSubtasksLoading, refetchSubtasks } = useTaskSubtasks(
+  computed(() => showSubtasks.value ? props.task.id : ''),
+)
+
 const isExpired = computed(() => {
   if (props.task.status === 'completed') return false
   return new Date(props.task.deadline) < new Date()
 })
 
 const subtaskProgress = computed(() => {
-  if (subtasks.value.length === 0) return 0
-  const completed = subtasks.value.filter((s) => s.status === 'completed').length
-  return Math.round((completed / subtasks.value.length) * 100)
+  const list = subtasks.value ?? []
+  if (list.length === 0) return 0
+  const completed = list.filter((s) => s.status === 'completed').length
+  return Math.round((completed / list.length) * 100)
 })
 
 const handleToggleTimer = async () => {
   actionLoading.value = true
   try {
-    await taskStore.toggleTimer(props.task.id)
-  } catch (error: any) {
-    alert(error.response?.data?.message || 'Erro ao processar cronômetro.')
+    await toggleTimer({ taskId: props.task.id, isRunning: props.task.isTimerRunning })
+  } catch {
+    alert('Erro ao processar cronômetro.')
   } finally {
     actionLoading.value = false
   }
@@ -46,52 +55,46 @@ const handleComplete = async () => {
   if (!confirm('Deseja marcar esta tarefa como concluída?')) return
   actionLoading.value = true
   try {
-    await taskStore.completeTask(props.task.id)
-  } catch (error: any) {
-    alert(error.response?.data?.message || 'Erro ao concluir tarefa.')
+    await completeTask(props.task.id)
+  } catch {
+    alert('Erro ao concluir tarefa.')
   } finally {
     actionLoading.value = false
   }
 }
 
-const toggleSubtasks = async () => {
+const toggleSubtasks = () => {
   showSubtasks.value = !showSubtasks.value
-  if (showSubtasks.value && subtasks.value.length === 0) {
-    subtasksLoading.value = true
-    subtasks.value = await taskStore.loadSubtasks(props.task.id)
-    subtasksLoading.value = false
+  if (showSubtasks.value) {
+    refetchSubtasks()
   }
 }
 
 const handleSubtaskCreated = () => {
   showCreateSubtask.value = false
-  toggleSubtasks()
+  showSubtasks.value = true
+  refetchSubtasks()
   emit('subtask-created')
 }
 
 const handleToggleSubtask = async (sub: Task) => {
   try {
-    if (sub.status === 'completed') {
-      await taskService.updateTask(sub.id, { status: 'not_started' })
-      sub.status = 'not_started'
-    } else {
-      await taskService.completeTask(sub.id)
-      sub.status = 'completed'
-    }
-  } catch (error: any) {
-    alert(error.response?.data?.message || 'Erro ao alternar subtarefa.')
+    await toggleSubtask({ taskId: sub.id, isCompleted: sub.status === 'completed' })
+    refetchSubtasks()
+  } catch {
+    alert('Erro ao alternar subtarefa.')
   }
 }
 
 const handleReportDelay = async () => {
   delaySending.value = true
   try {
-    await taskStore.reportDelay(props.task.id, delayReason.value || undefined)
+    await reportDelay({ taskId: props.task.id, reason: delayReason.value || undefined })
     showDelayModal.value = false
     delayReason.value = ''
     alert('Alerta de atraso enviado ao supervisor com sucesso!')
-  } catch (error: any) {
-    alert(error.response?.data?.message || 'Erro ao reportar atraso.')
+  } catch {
+    alert('Erro ao reportar atraso.')
   } finally {
     delaySending.value = false
   }
@@ -100,14 +103,13 @@ const handleReportDelay = async () => {
 const handleDelete = async () => {
   deleteLoading.value = true
   try {
-    await taskStore.removeTask(props.task.id)
+    await deleteTask(props.task.id)
     showDeleteConfirm.value = false
-  } catch (error: any) {
-    alert(error.response?.data?.message || 'Erro ao excluir tarefa.')
+  } catch {
+    alert('Erro ao excluir tarefa.')
     deleteLoading.value = false
   }
 }
-
 
 </script>
 
@@ -237,10 +239,10 @@ const handleDelete = async () => {
     </div>
 
     <div v-if="showSubtasks && !task.parentTaskId" class="border-t border-border px-4 pb-4 pt-2">
-      <div v-if="subtasksLoading" class="text-xs text-muted py-2 text-center">
+      <div v-if="isSubtasksLoading" class="text-xs text-muted py-2 text-center">
         <i class="pi pi-spinner animate-spin"></i> Carregando subtarefas...
       </div>
-      <div v-else-if="subtasks.length === 0" class="text-xs text-muted py-2 text-center">
+      <div v-else-if="!subtasks || subtasks.length === 0" class="text-xs text-muted py-2 text-center">
         Nenhuma subtarefa ainda.
       </div>
       <div v-else class="space-y-2">

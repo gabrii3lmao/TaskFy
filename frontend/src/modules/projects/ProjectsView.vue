@@ -1,43 +1,13 @@
-<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { projectService, type Project } from '@/services/projectService'
+import { ref } from 'vue'
+import { useProjects } from '@/composables/useProjects'
 import { useAuthStore } from '@/stores/auth'
 import CreateProjectModal from './components/CreateProjectModal.vue'
 
 const authStore = useAuthStore()
-
-const projects = ref<Project[]>([])
-const loading = ref(true)
-const errorMessage = ref('')
+const { projects, isLoading, isError, error, refetch, deleteProject } = useProjects()
 
 const showCreateModal = ref(false)
-
-const fetchProjects = async () => {
-  loading.value = true
-  errorMessage.value = ''
-
-  try {
-    projects.value = await projectService.getProjects()
-  } catch (error: any) {
-    errorMessage.value = 'Erro ao carregar os projetos. Tente novamente.'
-    console.error(error)
-  } finally {
-    loading.value = false
-  }
-}
-
-const handleProjectCreated = (newProject: Project) => {
-  const formattedProject: Project = {
-    ...newProject,
-    totalTasks: 0,
-    completedTasks: 0,
-    progress: 0,
-    deadlineStatus: 'Em dia',
-  }
-
-  projects.value.unshift(formattedProject)
-}
 
 const formatDate = (dateString: string) => {
   if (!dateString) return ''
@@ -57,16 +27,12 @@ const handleDeleteProject = async (projectId: string, projectTitle: string) => {
   if (!confirmed) return
 
   try {
-    await projectService.deleteProject(projectId)
-    projects.value = projects.value.filter((project) => project.id !== projectId)
-  } catch (error: any) {
-    alert(error.response?.data?.message || 'Erro ao excluir o projeto.')
+    await deleteProject(projectId)
+  } catch (err: unknown) {
+    const axiosError = err as { response?: { data?: { message?: string } } }
+    alert(axiosError.response?.data?.message || 'Erro ao excluir o projeto.')
   }
 }
-
-onMounted(() => {
-  fetchProjects()
-})
 </script>
 
 <template>
@@ -93,14 +59,14 @@ onMounted(() => {
     </div>
 
     <div
-      v-if="errorMessage"
+      v-if="isError"
       class="p-4 bg-danger/10 border border-danger/20 text-danger rounded-xl flex items-center gap-2"
     >
       <i class="pi pi-exclamation-triangle"></i>
-      <span class="text-sm font-medium">{{ errorMessage }}</span>
+      <span class="text-sm font-medium">{{ error instanceof Error ? error.message : 'Erro ao carregar os projetos. Tente novamente.' }}</span>
     </div>
 
-    <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    <div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       <div
         v-for="i in 3"
         :key="i"
@@ -113,7 +79,7 @@ onMounted(() => {
     </div>
 
     <div
-      v-else-if="projects.length === 0"
+      v-else-if="!projects || projects.length === 0"
       class="bg-surface border border-border rounded-2xl p-12 text-center max-w-lg mx-auto shadow-sm"
     >
       <div class="space-y-3">
@@ -206,7 +172,7 @@ onMounted(() => {
     <CreateProjectModal
       v-if="showCreateModal"
       @close="showCreateModal = false"
-      @created="handleProjectCreated"
+      @created="() => refetch()"
     />
   </div>
 </template>

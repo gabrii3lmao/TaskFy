@@ -22,7 +22,7 @@ const features = [
 
       <div class="relative z-10">
         <div class="flex items-center gap-3">
-          <img src="/logo-taskfy.svg" alt="TaskFy" class="h-9 w-auto brightness-0 invert" />
+          <img src="/taskfy-logo.svg" alt="TaskFy" class="h-11 w-auto brightness-0 invert" />
           <span class="text-2xl font-bold text-white">TaskFy</span>
         </div>
 
@@ -77,7 +77,7 @@ const features = [
     <div class="flex-1 flex items-center justify-center p-4 lg:p-8">
       <div class="w-full max-w-md">
         <div class="lg:hidden flex items-center justify-center gap-3 mb-8">
-          <img src="/logo-taskfy.svg" alt="TaskFy" class="h-9 w-auto" />
+          <img src="/taskfy-logo.svg" alt="TaskFy" class="h-11 w-auto" />
           <span class="text-2xl font-bold text-foreground">TaskFy</span>
         </div>
 

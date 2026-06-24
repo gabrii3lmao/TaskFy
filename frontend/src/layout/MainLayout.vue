@@ -49,13 +49,13 @@ const navLinks = [
       ]"
     >
       <div
-        class="p-5 lg:p-6 border-b border-border flex items-center justify-between bg-gradient-to-r from-primary/5 to-transparent"
+        class="lg:p-6 border-b border-border flex items-center justify-between bg-gradient-to-r from-primary/5 to-transparent"
       >
         <div class="flex items-center gap-3">
-          <img src="/logo-taskfy.svg" alt="TaskFy" class="h-8 w-auto" />
+          <img src="/taskfy-logo.svg" alt="TaskFy" class="h-20 w-auto" />
           <div>
-            <h1 class="text-lg font-bold text-foreground leading-tight">TaskFy</h1>
-            <p class="text-[10px] text-muted leading-tight">Gestão de tarefas</p>
+            <h1 class="text-2xl font-bold text-foreground leading-tight">TaskFy</h1>
+            <p class="text-[14px] text-muted leading-tight">Gestão de tarefas</p>
           </div>
         </div>
         <button

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 const routes: RouteRecordRaw[] = [
   {
     path: '/login',
@@ -57,13 +58,13 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('@TaskFy:token')
+  const authStore = useAuthStore()
 
-  if (to.meta.requiresAuth && !token) {
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     return next({ name: 'Login' })
   }
 
-  if (to.meta.requiresGuest && token) {
+  if (to.meta.requiresGuest && authStore.isAuthenticated) {
     return next({ name: 'Dashboard' })
   }
 

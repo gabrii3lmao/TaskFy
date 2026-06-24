@@ -1,22 +1,24 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useTaskStore } from '@/stores/task'
+import { ref, computed } from 'vue'
+import { useMyTasks } from '@/composables/useTasks'
 
-const taskStore = useTaskStore()
+const { tasks, isLoading } = useMyTasks()
 
 const statusFilter = ref<string>('all')
 const projectFilter = ref<string>('all')
 
+const myTasksFlat = computed(() => tasks.value ?? [])
+
 const projectNames = computed(() => {
   const names = new Set<string>()
-  taskStore.myTasksFlat.forEach((t) => {
+  myTasksFlat.value.forEach((t) => {
     if (t.projectName) names.add(t.projectName)
   })
   return Array.from(names).sort()
 })
 
 const filteredTasks = computed(() => {
-  return taskStore.myTasksFlat.filter((t) => {
+  return myTasksFlat.value.filter((t) => {
     if (statusFilter.value !== 'all' && t.status !== statusFilter.value) return false
     if (projectFilter.value !== 'all' && t.projectName !== projectFilter.value) return false
     return true
@@ -42,10 +44,6 @@ const isExpired = (task: { status: string; deadline: string }) => {
   if (task.status === 'completed') return false
   return new Date(task.deadline) < new Date()
 }
-
-onMounted(() => {
-  taskStore.loadMyTasks()
-})
 </script>
 
 <template>
@@ -83,11 +81,11 @@ onMounted(() => {
       </select>
 
       <span class="text-xs text-muted ml-auto">
-        {{ filteredTasks.length }} de {{ taskStore.myTasksFlat.length }} tarefas
+        {{ filteredTasks.length }} de {{ myTasksFlat.length }} tarefas
       </span>
     </div>
 
-    <div v-if="taskStore.loading" class="space-y-4">
+    <div v-if="isLoading" class="space-y-4">
       <div v-for="i in 3" :key="i" class="h-20 bg-surface border border-border animate-pulse rounded-xl"></div>
     </div>
 

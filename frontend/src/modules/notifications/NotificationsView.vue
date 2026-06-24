@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { notificationService, type Notification } from '@/services/notificationService'
+import { ref, computed } from 'vue'
+import { useNotifications } from '@/composables/useNotifications'
+import type { Notification } from '@/services/notificationService'
 
-const notifications = ref<Notification[]>([])
-const loading = ref(true)
+const { notifications, isLoading, markAsRead, markAllAsRead } = useNotifications()
+
 const activeFilter = ref<'all' | 'unread' | 'mentions' | 'projects'>('all')
 
+const allNotifications = computed(() => notifications.value ?? [])
+
 const filteredNotifications = computed(() => {
-  let list = notifications.value
+  let list = allNotifications.value
 
   if (activeFilter.value === 'unread') {
     list = list.filter((n) => !n.read)
@@ -20,7 +23,7 @@ const filteredNotifications = computed(() => {
   return list
 })
 
-const unreadCount = computed(() => notifications.value.filter((n) => !n.read).length)
+const unreadCount = computed(() => notifications.value?.filter((n) => !n.read).length ?? 0)
 
 const typeConfig = {
   task_completed: { bg: 'bg-primary/10', icon: 'pi-check-circle', color: 'text-primary' },
@@ -51,8 +54,7 @@ const timeAgo = (dateString: string) => {
 const handleMarkAsRead = async (notification: Notification) => {
   if (notification.read) return
   try {
-    await notificationService.markAsRead(notification.id)
-    notification.read = true
+    await markAsRead(notification.id)
   } catch (error) {
     console.error('Erro ao marcar como lida:', error)
   }
@@ -60,22 +62,11 @@ const handleMarkAsRead = async (notification: Notification) => {
 
 const handleMarkAllAsRead = async () => {
   try {
-    await notificationService.markAllAsRead()
-    notifications.value.forEach((n) => (n.read = true))
+    await markAllAsRead()
   } catch (error) {
     console.error('Erro ao marcar todas como lidas:', error)
   }
 }
-
-onMounted(async () => {
-  try {
-    notifications.value = await notificationService.getNotifications()
-  } catch (error) {
-    console.error('Erro ao carregar notificações:', error)
-  } finally {
-    loading.value = false
-  }
-})
 </script>
 
 <template>
@@ -104,7 +95,7 @@ onMounted(async () => {
         :class="activeFilter === 'all' ? 'bg-primary text-white' : 'text-muted hover:bg-background'"
       >
         Todas
-        <span class="ml-1 text-[10px] opacity-70">({{ notifications.length }})</span>
+        <span class="ml-1 text-[10px] opacity-70">({{ allNotifications.length }})</span>
       </button>
       <button
         @click="activeFilter = 'unread'"
@@ -130,7 +121,7 @@ onMounted(async () => {
       </button>
     </div>
 
-    <div v-if="loading" class="space-y-3">
+    <div v-if="isLoading" class="space-y-3">
       <div v-for="i in 4" :key="i" class="h-24 bg-surface border border-border animate-pulse rounded-xl"></div>
     </div>
 

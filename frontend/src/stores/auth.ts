@@ -11,14 +11,18 @@ interface User {
 export const useAuthStore = defineStore(
   'auth',
   () => {
+    const accessToken = ref<string | null>(null)
+    const refreshToken = ref<string | null>(null)
     const user = ref<User | null>(null)
-    const token = ref<string | null>(localStorage.getItem('@TaskFy:token'))
-    const isAuthenticated = ref<boolean>(!!token.value)
+    const isAuthenticated = ref<boolean>(false)
 
-    // Carrega os dados do localStorage ao iniciar a aplicação
     const loadStoredUser = () => {
+      const storedToken = localStorage.getItem('@TaskFy:token')
+      const storedRefreshToken = localStorage.getItem('@TaskFy:refreshToken')
       const storedUser = localStorage.getItem('@TaskFy:user')
-      if (storedUser && token.value) {
+      if ((storedToken || storedRefreshToken) && storedUser) {
+        accessToken.value = storedToken
+        refreshToken.value = storedRefreshToken
         user.value = JSON.parse(storedUser)
         isAuthenticated.value = true
       }
@@ -26,36 +30,45 @@ export const useAuthStore = defineStore(
 
     const login = async (email: string, passwordPlain: string) => {
       const response = await api.post('/auth/login', { email, password: passwordPlain })
+      const { accessToken: receivedAccessToken, refreshToken: receivedRefreshToken, user: receivedUser } = response.data.data
 
-      const { token: receivedToken, user: receivedUser } = response.data.data
-
-      // Salva no estado
+      accessToken.value = receivedAccessToken
+      refreshToken.value = receivedRefreshToken
       user.value = receivedUser
-      token.value = receivedToken
       isAuthenticated.value = true
 
-      localStorage.setItem('@TaskFy:token', receivedToken)
+      localStorage.setItem('@TaskFy:token', receivedAccessToken)
+      localStorage.setItem('@TaskFy:refreshToken', receivedRefreshToken)
       localStorage.setItem('@TaskFy:user', JSON.stringify(receivedUser))
     }
 
-    const logout = () => {
+    const logout = async () => {
+      const currentRefreshToken = localStorage.getItem('@TaskFy:refreshToken')
+      if (currentRefreshToken) {
+        try {
+          await api.post('/auth/logout', { refreshToken: currentRefreshToken })
+        } catch {
+          // Ignora erro no logout
+        }
+      }
+
+      accessToken.value = null
+      refreshToken.value = null
       user.value = null
-      token.value = null
       isAuthenticated.value = false
       localStorage.removeItem('@TaskFy:token')
+      localStorage.removeItem('@TaskFy:refreshToken')
       localStorage.removeItem('@TaskFy:user')
     }
 
     return {
+      accessToken,
+      refreshToken,
       user,
-      token,
       isAuthenticated,
       login,
       logout,
       loadStoredUser,
     }
-  },
-  {
-    persist: true,
   },
 )

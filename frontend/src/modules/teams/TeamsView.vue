@@ -1,33 +1,14 @@
-<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { teamService, type Team } from '@/services/teamService'
+import { ref } from 'vue'
+import { useTeams } from '@/composables/useTeams'
 import CreateTeamModal from './components/CreateTeamModal.vue'
 import AddMemberModal from './components/AddMemberModal.vue'
 
-const teams = ref<Team[]>([])
-const loading = ref(true)
-const errorMessage = ref('')
+const { teams, isLoading, isError, error, refetch } = useTeams()
 
-// Controle dos Modais
 const showCreateModal = ref(false)
 const activeAddMemberTeam = ref<{ id: string; name: string } | null>(null)
 
-const fetchTeams = async () => {
-  loading.value = true
-  errorMessage.value = ''
-
-  try {
-    teams.value = await teamService.getTeams()
-  } catch (error: any) {
-    errorMessage.value = 'Não foi possível carregar as equipes. Tente novamente.'
-    console.error(error)
-  } finally {
-    loading.value = false
-  }
-}
-
-// Formatação do cargo para pt-BR
 const translateRole = (role: string) => {
   const map: Record<string, string> = {
     admin: 'Administrador',
@@ -37,7 +18,6 @@ const translateRole = (role: string) => {
   return map[role] || role
 }
 
-// Cor da Badge por cargo
 const getRoleBadgeClass = (role: string) => {
   switch (role) {
     case 'admin':
@@ -55,10 +35,6 @@ const formatDate = (dateString: string) => {
     new Date(dateString),
   )
 }
-
-onMounted(() => {
-  fetchTeams()
-})
 </script>
 
 <template>
@@ -84,14 +60,14 @@ onMounted(() => {
     </div>
 
     <div
-      v-if="errorMessage"
+      v-if="isError"
       class="p-4 bg-danger/10 text-danger rounded-lg flex items-center gap-2 border border-danger/20"
     >
       <i class="pi pi-exclamation-triangle"></i>
-      <span class="text-sm font-medium">{{ errorMessage }}</span>
+      <span class="text-sm font-medium">{{ error instanceof Error ? error.message : 'Não foi possível carregar as equipes.' }}</span>
     </div>
 
-    <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    <div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       <div
         v-for="i in 3"
         :key="i"
@@ -104,7 +80,7 @@ onMounted(() => {
     </div>
 
     <div
-      v-else-if="teams.length === 0"
+      v-else-if="!teams || teams.length === 0"
       class="bg-surface border border-border rounded-xl p-12 text-center max-w-lg mx-auto space-y-3 shadow-sm"
     >
       <i class="pi pi-users text-4xl text-muted"></i>
@@ -168,7 +144,7 @@ onMounted(() => {
     <CreateTeamModal
       v-if="showCreateModal"
       @close="showCreateModal = false"
-      @created="(newTeam) => teams.unshift(newTeam)"
+      @created="() => refetch()"
     />
 
     <AddMemberModal
@@ -176,7 +152,7 @@ onMounted(() => {
       :team-id="activeAddMemberTeam.id"
       :team-name="activeAddMemberTeam.name"
       @close="activeAddMemberTeam = null"
-      @added="fetchTeams"
+      @added="() => refetch()"
     />
   </div>
 </template>
