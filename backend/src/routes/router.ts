@@ -9,6 +9,10 @@ import authRouter from "../modules/auth/auth.routes.js";
 
 const router = Router();
 
+router.get("/ping", (req, res) => {
+  res.send("PONG");
+});
+
 router.use("/auth", authRouter);
 router.use("/teams", teamsRouter);
 router.use("/projects", projectsRouter);
